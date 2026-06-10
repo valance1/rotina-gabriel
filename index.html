@@ -177,6 +177,10 @@
     main { padding: 1rem; }
   }
 </style>
+
+<div id="toast" style="position:fixed;bottom:24px;right:24px;background:#2C2C2A;color:#fff;font-size:12px;padding:8px 14px;border-radius:8px;opacity:0;transition:opacity 0.3s;pointer-events:none;font-family:'Inter',sans-serif;z-index:999;">
+  Salvo no navegador
+</div>
 </head>
 <body>
 
@@ -199,6 +203,13 @@
       </div>
       <div class="total-bar-wrap"><div class="total-bar" id="total-bar"></div></div>
       <div class="warn" id="warn-over">Mais horas do que slots disponíveis. Reduza algum hobby.</div>
+    </div>
+
+    <div style="display:flex;gap:8px;margin-top:10px;align-items:center;">
+      <button onclick="resetHours()" style="font-size:11px;padding:5px 10px;border-radius:6px;border:1px solid var(--border-md);background:transparent;color:var(--muted);cursor:pointer;font-family:inherit;">
+        Resetar padrão
+      </button>
+      <span style="font-size:11px;color:var(--muted);">Salvo automaticamente</span>
     </div>
 
     <div class="summary-cards" id="summary-area"></div>
@@ -257,8 +268,31 @@ const SLOTS = [
   {d:2,h:21,p:5},
 ];
 
+const LS_KEY = 'rotina_gabriel_v1';
+
+function loadSaved() {
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch(e) {}
+  return null;
+}
+
+function saveHours() {
+  try { localStorage.setItem(LS_KEY, JSON.stringify(hobbyHours)); } catch(e) {}
+  showSavedToast();
+}
+
+function showSavedToast() {
+  const t = document.getElementById('toast');
+  t.style.opacity = '1';
+  clearTimeout(window._toastTimer);
+  window._toastTimer = setTimeout(() => { t.style.opacity = '0'; }, 1800);
+}
+
 let hobbyHours = {};
-HOBBIES.forEach(h => hobbyHours[h.key] = h.hours);
+const saved = loadSaved();
+HOBBIES.forEach(h => hobbyHours[h.key] = saved ? (saved[h.key] ?? h.hours) : h.hours);
 
 function totalHobby() { return Object.values(hobbyHours).reduce((a,b)=>a+b,0); }
 
@@ -329,11 +363,11 @@ function buildControls() {
           <div class="hobby-dot" style="background:${h.color};"></div>
           ${h.name}
         </div>
-        <span class="hobby-val" style="color:${h.color};" id="val-${h.key}">${h.hours.toFixed(1)}h</span>
+        <span class="hobby-val" style="color:${h.color};" id="val-${h.key}">${hobbyHours[h.key].toFixed(1)}h</span>
       </div>
       <div class="hobby-tag">${h.type === 'port' ? 'Portfólio — manter constante' : 'Flexível — ajuste pelo humor'}</div>
-      <input type="range" min="0" max="6" step="0.5" value="${h.hours}"
-        oninput="hobbyHours['${h.key}']=parseFloat(this.value);document.getElementById('val-${h.key}').textContent=parseFloat(this.value).toFixed(1)+'h';render();">
+      <input type="range" min="0" max="6" step="0.5" value="${hobbyHours[h.key]}"
+        oninput="hobbyHours['${h.key}']=parseFloat(this.value);document.getElementById('val-${h.key}').textContent=parseFloat(this.value).toFixed(1)+'h';render();saveHours();">
     </div>
   `).join('');
 
@@ -344,6 +378,13 @@ function buildControls() {
     `<div class="leg-item"><div class="leg-dot" style="background:${h.bg};border:1px solid rgba(0,0,0,0.1);"></div>${h.name.split('/')[0]}</div>`
   ).join('');
   document.getElementById('legend-area').innerHTML = catEntries + hobbyEntries;
+}
+
+function resetHours() {
+  HOBBIES.forEach(h => hobbyHours[h.key] = h.hours);
+  localStorage.removeItem(LS_KEY);
+  buildControls();
+  render();
 }
 
 buildControls();
