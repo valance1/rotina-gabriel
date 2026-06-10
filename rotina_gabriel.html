@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rotina Semanal — Gabriel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:       #F7F6F2;
+    --surface:  #FFFFFF;
+    --border:   rgba(44,44,42,0.10);
+    --border-md:rgba(44,44,42,0.18);
+    --text:     #2C2C2A;
+    --muted:    #888780;
+    --faint:    #C8C7BF;
+
+    --facul:    #B5D4F4; --facul-t: #0C447C;
+    --estudo:   #C0DD97; --estudo-t:#27500A;
+    --acad:     #FAC775; --acad-t:  #633806;
+    --namora:   #F4C0D1; --namora-t:#72243E;
+    --futebol:  #9FE1CB; --futebol-t:#085041;
+    --livre:    #EEECE5; --livre-t:  #888780;
+
+    --desenho:  #378ADD; --desenho-bg:#E6F1FB; --desenho-t:#0C447C;
+    --escult:   #1D9E75; --escult-bg: #E1F5EE; --escult-t: #085041;
+    --anim:     #7F77DD; --anim-bg:   #EEEDFE; --anim-t:   #3C3489;
+    --guitar:   #D85A30; --guitar-bg: #FAECE7; --guitar-t: #712B13;
+    --jogos:    #D4537E; --jogos-bg:  #FBEAF0; --jogos-t:  #72243E;
+
+    --radius:   10px;
+    --radius-sm:6px;
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  header {
+    background: var(--text);
+    color: #fff;
+    padding: 1.25rem 2rem;
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  header h1 { font-size: 15px; font-weight: 600; letter-spacing: -0.01em; }
+  header span { font-size: 12px; color: rgba(255,255,255,0.45); font-family: 'JetBrains Mono', monospace; }
+
+  .layout { display: grid; grid-template-columns: 280px 1fr; min-height: calc(100vh - 52px); }
+
+  /* ─── Sidebar ─── */
+  aside {
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 1.5rem 1.25rem;
+    position: sticky;
+    top: 52px;
+    height: calc(100vh - 52px);
+    overflow-y: auto;
+  }
+  .aside-title { font-size: 10px; font-weight: 600; letter-spacing: 0.08em; color: var(--muted); text-transform: uppercase; margin-bottom: 1rem; }
+
+  .hobby-ctrl { margin-bottom: 1.25rem; }
+  .hobby-ctrl-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+  .hobby-ctrl-name { display: flex; align-items: center; gap: 7px; font-size: 13px; font-weight: 500; }
+  .hobby-dot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
+  .hobby-val { font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 500; }
+  .hobby-tag { font-size: 10px; color: var(--muted); margin-bottom: 5px; padding-left: 15px; }
+
+  input[type=range] {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 4px;
+    background: var(--faint);
+    border-radius: 2px;
+    outline: none;
+    cursor: pointer;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: var(--text);
+    border: 2px solid var(--surface);
+    box-shadow: 0 0 0 1px var(--border-md);
+    cursor: pointer;
+    transition: transform 0.1s;
+  }
+  input[type=range]:hover::-webkit-slider-thumb { transform: scale(1.15); }
+  input[type=range]::-moz-range-thumb {
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: var(--text);
+    border: 2px solid var(--surface);
+    cursor: pointer;
+  }
+
+  .divider { height: 1px; background: var(--border); margin: 1.25rem 0; }
+
+  .total-section { margin-bottom: 1rem; }
+  .total-row { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+  .total-bar-wrap { height: 5px; background: var(--faint); border-radius: 3px; overflow: hidden; }
+  .total-bar { height: 100%; border-radius: 3px; transition: width 0.3s, background 0.3s; }
+
+  .warn { font-size: 11px; color: #A32D2D; background: #FCEBEB; border-radius: var(--radius-sm); padding: 7px 10px; margin-top: 8px; display: none; }
+
+  .legend-section { margin-top: 1.25rem; }
+  .leg-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+  .leg-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--muted); }
+  .leg-dot { width: 9px; height: 9px; border-radius: 2px; flex-shrink: 0; }
+
+  .summary-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 1.25rem; }
+  .sum-card { background: var(--bg); border-radius: var(--radius-sm); padding: 8px 10px; }
+  .sum-label { font-size: 10px; color: var(--muted); margin-bottom: 2px; }
+  .sum-val { font-size: 17px; font-weight: 600; font-family: 'JetBrains Mono', monospace; }
+  .sum-sub { font-size: 10px; color: var(--faint); margin-top: 1px; }
+
+  /* ─── Calendar ─── */
+  main { padding: 1.5rem; overflow-x: auto; }
+
+  .cal-grid {
+    display: grid;
+    grid-template-columns: 48px repeat(7, minmax(0,1fr));
+    gap: 2px;
+    min-width: 600px;
+  }
+  .cal-head {
+    font-size: 11px; font-weight: 600;
+    color: var(--muted);
+    text-align: center;
+    padding: 6px 2px;
+    letter-spacing: 0.03em;
+  }
+  .cal-time {
+    font-size: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--faint);
+    text-align: right;
+    padding-right: 8px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+  }
+  .cal-cell {
+    height: 30px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 500;
+    text-align: center;
+    padding: 1px 3px;
+    line-height: 1.2;
+    transition: opacity 0.15s;
+  }
+  .cal-cell.empty { background: rgba(44,44,42,0.04); }
+  .cal-cell:not(.empty):hover { opacity: 0.8; cursor: default; }
+
+  @media (max-width: 700px) {
+    .layout { grid-template-columns: 1fr; }
+    aside { position: static; height: auto; }
+    main { padding: 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Rotina Semanal</h1>
+  <span>Gabriel · UFMG Medicina · 2026</span>
+</header>
+
+<div class="layout">
+  <aside>
+    <div class="aside-title">Horas por hobby</div>
+    <div id="ctrl-area"></div>
+
+    <div class="divider"></div>
+
+    <div class="total-section">
+      <div class="total-row">
+        <span id="total-label">0h alocadas</span>
+        <span id="avail-label">16 slots livres</span>
+      </div>
+      <div class="total-bar-wrap"><div class="total-bar" id="total-bar"></div></div>
+      <div class="warn" id="warn-over">Mais horas do que slots disponíveis. Reduza algum hobby.</div>
+    </div>
+
+    <div class="summary-cards" id="summary-area"></div>
+
+    <div class="divider"></div>
+
+    <div class="legend-section">
+      <div class="aside-title">Legenda</div>
+      <div class="leg-grid" id="legend-area"></div>
+    </div>
+  </aside>
+
+  <main>
+    <div class="cal-grid" id="cal-grid"></div>
+  </main>
+</div>
+
+<script>
+const HOBBIES = [
+  { key:'desenho', name:'Desenho/Pintura', icon:'ti-brush',             color:'var(--desenho)', bg:'var(--desenho-bg)', text:'var(--desenho-t)', type:'port', hours:3   },
+  { key:'escult',  name:'Escultura 3D',    icon:'ti-box',               color:'var(--escult)',  bg:'var(--escult-bg)', text:'var(--escult-t)', type:'port', hours:2.5 },
+  { key:'anim',    name:'Animação',        icon:'ti-movie',             color:'var(--anim)',    bg:'var(--anim-bg)',   text:'var(--anim-t)',   type:'flex', hours:2   },
+  { key:'guitar',  name:'Guitarra',        icon:'ti-music',             color:'var(--guitar)',  bg:'var(--guitar-bg)', text:'var(--guitar-t)', type:'flex', hours:1.5 },
+  { key:'jogos',   name:'Jogos',           icon:'ti-device-gamepad-2',  color:'var(--jogos)',   bg:'var(--jogos-bg)',  text:'var(--jogos-t)',  type:'flex', hours:1   },
+];
+
+const CAT = {
+  facul:   { bg:'var(--facul)',   text:'var(--facul-t)',   label:'Faculdade' },
+  estudo:  { bg:'var(--estudo)',  text:'var(--estudo-t)',  label:'Estudo' },
+  acad:    { bg:'var(--acad)',    text:'var(--acad-t)',    label:'Academia' },
+  namora:  { bg:'var(--namora)', text:'var(--namora-t)',  label:'Namorada' },
+  futebol: { bg:'var(--futebol)',text:'var(--futebol-t)', label:'Futebol' },
+  livre:   { bg:'var(--livre)',   text:'var(--livre-t)',   label:'Livre' },
+};
+
+const DAYS = ['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'];
+const HOURS = Array.from({length:18}, (_,i) => i + 6);
+
+const BASE = {
+  0:{6:'livre',7:'facul',8:'facul',9:'facul',10:'facul',11:'facul',12:'facul',13:'facul',14:'facul',15:'facul',16:'facul',17:'facul',18:'facul',19:'estudo',20:'livre',21:'livre',22:'livre',23:'livre'},
+  1:{7:'facul',8:'facul',9:'facul',10:'facul',11:'facul',12:'acad',13:'livre',14:'estudo',15:'estudo',16:'livre',17:'livre',18:'livre',19:'livre',20:'livre',21:'livre',22:'livre',23:'livre'},
+  2:{6:'livre',7:'facul',8:'facul',9:'facul',10:'facul',11:'facul',12:'facul',13:'facul',14:'facul',15:'facul',16:'facul',17:'facul',18:'facul',19:'facul',20:'estudo',21:'livre',22:'livre',23:'livre'},
+  3:{6:'livre',7:'acad',8:'acad',9:'livre',10:'livre',11:'facul',12:'facul',13:'facul',14:'facul',15:'facul',16:'facul',17:'facul',18:'livre',19:'futebol',20:'futebol',21:'livre',22:'livre',23:'livre'},
+  4:{6:'livre',7:'facul',8:'facul',9:'facul',10:'facul',11:'facul',12:'facul',13:'acad',14:'livre',15:'facul',16:'facul',17:'facul',18:'livre',19:'livre',20:'estudo',21:'livre',22:'livre',23:'livre'},
+  5:{7:'acad',8:'acad',9:'namora',10:'namora',11:'namora',12:'namora',13:'namora',14:'namora',15:'namora',16:'namora',17:'namora',18:'namora',19:'namora',20:'livre',21:'livre',22:'livre',23:'livre'},
+  6:{8:'namora',9:'namora',10:'namora',11:'namora',12:'namora',13:'livre',14:'estudo',15:'estudo',16:'livre',17:'livre',18:'livre',19:'livre',20:'livre',21:'livre',22:'livre',23:'livre'},
+};
+
+const SLOTS = [
+  {d:1,h:16,p:1},{d:1,h:17,p:1},{d:1,h:18,p:1},{d:1,h:19,p:1},{d:1,h:20,p:1},{d:1,h:21,p:1},
+  {d:3,h:9,p:2},{d:3,h:10,p:2},
+  {d:6,h:16,p:2},{d:6,h:17,p:2},{d:6,h:18,p:2},
+  {d:4,h:18,p:3},{d:4,h:19,p:3},
+  {d:3,h:21,p:3},
+  {d:0,h:20,p:4},{d:0,h:21,p:4},
+  {d:2,h:21,p:5},
+];
+
+let hobbyHours = {};
+HOBBIES.forEach(h => hobbyHours[h.key] = h.hours);
+
+function totalHobby() { return Object.values(hobbyHours).reduce((a,b)=>a+b,0); }
+
+function buildAlloc() {
+  const slots = SLOTS.slice().sort((a,b)=>a.p-b.p);
+  const alloc = {};
+  let si = 0;
+  HOBBIES.forEach(h => {
+    const n = Math.round(hobbyHours[h.key]);
+    for (let i = 0; i < n && si < slots.length; i++, si++) {
+      alloc[slots[si].d+'|'+slots[si].h] = h;
+    }
+  });
+  return alloc;
+}
+
+function render() {
+  const total = totalHobby();
+  const avail = SLOTS.length;
+  const over = total > avail;
+  const pct = Math.min(100, Math.round(total / avail * 100));
+
+  document.getElementById('total-label').textContent = total.toFixed(1) + 'h alocadas';
+  document.getElementById('avail-label').textContent = avail + ' slots livres';
+  const bar = document.getElementById('total-bar');
+  bar.style.width = pct + '%';
+  bar.style.background = over ? '#E24B4A' : total > avail * 0.8 ? '#BA7517' : '#1D9E75';
+  document.getElementById('warn-over').style.display = over ? 'block' : 'none';
+
+  const alloc = buildAlloc();
+  const grid = document.getElementById('cal-grid');
+  let html = '<div class="cal-time"></div>';
+  DAYS.forEach(d => { html += `<div class="cal-head">${d}</div>`; });
+  HOURS.forEach(h => {
+    html += `<div class="cal-time">${h}h</div>`;
+    for (let d = 0; d < 7; d++) {
+      const k = d+'|'+h;
+      const hob = alloc[k];
+      const base = BASE[d] && BASE[d][h];
+      if (hob) {
+        html += `<div class="cal-cell" style="background:${hob.bg};color:${hob.text};" title="${hob.name}">${hob.name.split('/')[0].slice(0,6)}</div>`;
+      } else if (base && base !== 'livre') {
+        const c = CAT[base];
+        html += `<div class="cal-cell" style="background:${c.bg};color:${c.text};" title="${c.label}">${c.label.slice(0,4)}</div>`;
+      } else {
+        html += `<div class="cal-cell empty"></div>`;
+      }
+    }
+  });
+  grid.innerHTML = html;
+
+  const sum = document.getElementById('summary-area');
+  sum.innerHTML = HOBBIES.map(h => {
+    const hrs = hobbyHours[h.key];
+    return `<div class="sum-card">
+      <div class="sum-label">${h.name.split('/')[0]}</div>
+      <div class="sum-val" style="color:${h.color};">${hrs.toFixed(1)}h</div>
+      <div class="sum-sub">${Math.round(hrs*60)} min/sem</div>
+    </div>`;
+  }).join('');
+}
+
+function buildControls() {
+  document.getElementById('ctrl-area').innerHTML = HOBBIES.map(h => `
+    <div class="hobby-ctrl">
+      <div class="hobby-ctrl-top">
+        <div class="hobby-ctrl-name">
+          <div class="hobby-dot" style="background:${h.color};"></div>
+          ${h.name}
+        </div>
+        <span class="hobby-val" style="color:${h.color};" id="val-${h.key}">${h.hours.toFixed(1)}h</span>
+      </div>
+      <div class="hobby-tag">${h.type === 'port' ? 'Portfólio — manter constante' : 'Flexível — ajuste pelo humor'}</div>
+      <input type="range" min="0" max="6" step="0.5" value="${h.hours}"
+        oninput="hobbyHours['${h.key}']=parseFloat(this.value);document.getElementById('val-${h.key}').textContent=parseFloat(this.value).toFixed(1)+'h';render();">
+    </div>
+  `).join('');
+
+  const catEntries = Object.entries(CAT).map(([,v]) =>
+    `<div class="leg-item"><div class="leg-dot" style="background:${v.bg};border:1px solid rgba(0,0,0,0.1);"></div>${v.label}</div>`
+  ).join('');
+  const hobbyEntries = HOBBIES.map(h =>
+    `<div class="leg-item"><div class="leg-dot" style="background:${h.bg};border:1px solid rgba(0,0,0,0.1);"></div>${h.name.split('/')[0]}</div>`
+  ).join('');
+  document.getElementById('legend-area').innerHTML = catEntries + hobbyEntries;
+}
+
+buildControls();
+render();
+</script>
+</body>
+</html>
