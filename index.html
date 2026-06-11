@@ -348,22 +348,54 @@ function updateEstudo(val) {
   render();
 }
 
-const SLOTS = [
-  {d:1,h:16,p:1},{d:1,h:17,p:1},{d:1,h:18,p:1},{d:1,h:19,p:1},{d:1,h:20,p:1},{d:1,h:21,p:1},
-  {d:3,h:9,p:2},{d:3,h:10,p:2},
-  {d:6,h:16,p:2},{d:6,h:17,p:2},{d:6,h:18,p:2},
-  {d:4,h:18,p:3},{d:4,h:19,p:3},
-  {d:3,h:21,p:3},
-  {d:0,h:20,p:4},{d:0,h:21,p:4},
-  {d:2,h:21,p:5},
-  {d:1,h:22,p:6},{d:1,h:23,p:6},
-  {d:4,h:21,p:6},{d:4,h:22,p:6},
-  {d:6,h:19,p:6},{d:6,h:20,p:6},{d:6,h:21,p:6},
-  {d:0,h:22,p:7},{d:0,h:23,p:7},
-  {d:2,h:22,p:7},{d:2,h:23,p:7},
-  {d:3,h:22,p:7},{d:3,h:23,p:7},
-  {d:4,h:23,p:7},
-];
+// Slots disponíveis por hobby — com dias permitidos
+// dias: 0=Seg, 1=Ter, 2=Qua, 3=Qui, 4=Sex, 5=Sáb, 6=Dom
+const HOBBY_SLOTS = {
+  desenho: [
+    {d:1,h:16,p:1},{d:1,h:17,p:1},
+    {d:3,h:9,p:2},{d:3,h:10,p:2},
+    {d:6,h:16,p:2},{d:6,h:17,p:2},
+    {d:4,h:18,p:3},{d:4,h:19,p:3},
+    {d:1,h:18,p:4},{d:1,h:19,p:4},
+    {d:0,h:20,p:5},{d:0,h:21,p:5},
+  ],
+  escult: [
+    {d:1,h:18,p:1},{d:1,h:19,p:1},
+    {d:6,h:18,p:1},{d:6,h:19,p:1},
+    {d:3,h:9,p:2},{d:3,h:10,p:2},
+    {d:4,h:20,p:3},{d:4,h:21,p:3},
+    {d:1,h:20,p:4},{d:1,h:21,p:4},
+    {d:6,h:20,p:4},{d:6,h:21,p:4},
+  ],
+  anim: [
+    {d:4,h:18,p:1},{d:4,h:19,p:1},
+    {d:6,h:16,p:1},{d:6,h:17,p:1},
+    {d:1,h:20,p:2},{d:1,h:21,p:2},
+    {d:4,h:21,p:3},{d:4,h:22,p:3},
+    {d:6,h:19,p:3},{d:6,h:20,p:3},
+  ],
+  guitar: [
+    // Bom em dias pesados — baixa energia ok
+    {d:0,h:20,p:1},{d:0,h:21,p:1},
+    {d:2,h:21,p:1},{d:2,h:22,p:1},
+    {d:4,h:18,p:2},{d:4,h:19,p:2},
+    {d:6,h:18,p:2},{d:6,h:19,p:2},
+    {d:1,h:22,p:3},{d:1,h:23,p:3},
+    {d:3,h:21,p:3},{d:3,h:22,p:3},
+  ],
+  jogos: [
+    // Só Seg, Qua, Sex, Dom
+    {d:0,h:21,p:1},{d:0,h:22,p:1},
+    {d:2,h:21,p:1},{d:2,h:22,p:1},
+    {d:4,h:19,p:2},{d:4,h:20,p:2},
+    {d:6,h:19,p:2},{d:6,h:20,p:2},
+    {d:0,h:23,p:3},{d:2,h:23,p:3},
+  ],
+};
+
+// Todos os slots únicos para cálculo de disponibilidade
+const ALL_SLOTS = Object.values(HOBBY_SLOTS).flat()
+  .filter((s,i,a) => a.findIndex(x=>x.d===s.d&&x.h===s.h)===i);
 
 const LS_KEY = 'rotina_gabriel_v2';
 
@@ -410,34 +442,53 @@ function totalHobby() { return Object.values(hobbyHours).reduce((a,b)=>a+b,0); }
 function buildAlloc() {
   const extra = ESTUDO_MODES[estudoMode].extraSlots;
   const acadExtra = new Set(ACAD_MODES[academiaMode].slots.map(s => s.d+'|'+s.h));
-
-  // Slots de estudo extra (excluindo os que viram academia)
   const estudoExtra = new Set(
     ESTUDO_SLOTS.slice(0, extra).map(s => s.d+'|'+s.h).filter(k => !acadExtra.has(k))
   );
 
-  // Slots de hobby = SLOTS menos estudo extra menos academia extra
-  const availSlots = SLOTS
-    .filter(s => !estudoExtra.has(s.d+'|'+s.h) && !acadExtra.has(s.d+'|'+s.h))
-    .sort((a,b) => a.p - b.p);
-
   const alloc = {};
   estudoExtra.forEach(k => { alloc[k] = '__estudo__'; });
-  acadExtra.forEach(k  => { alloc[k] = '__acad__';   });
+  acadExtra.forEach(k  => { alloc[k] = '__acad__'; });
 
-  let si = 0;
-  HOBBIES.forEach(h => {
-    const n = Math.round(hobbyHours[h.key]);
-    for (let i = 0; i < n && si < availSlots.length; i++, si++) {
-      alloc[availSlots[si].d+'|'+availSlots[si].h] = h;
+  const blocked = new Set([...estudoExtra, ...acadExtra]);
+
+  // Rastrear: quantos slots e quais hobbies distintos por dia
+  const daySlotCount   = {};  // d -> nº de slots de hobby alocados
+  const dayHobbiesUsed = {};  // d -> Set de chaves de hobby
+  const MAX_HOBBIES_PER_DAY = 2;
+
+  HOBBIES.forEach(hobby => {
+    const n = Math.round(hobbyHours[hobby.key]);
+    if (n === 0) return;
+
+    const candidates = (HOBBY_SLOTS[hobby.key] || [])
+      .filter(s => !blocked.has(s.d+'|'+s.h) && !alloc[s.d+'|'+s.h])
+      .sort((a,b) => a.p - b.p);
+
+    let placed = 0;
+    for (const s of candidates) {
+      if (placed >= n) break;
+      const k = s.d+'|'+s.h;
+      const hobbiesOnDay = dayHobbiesUsed[s.d] || new Set();
+      const alreadyThisHobby = hobbiesOnDay.has(hobby.key);
+
+      // Bloquear se já há 2 hobbies distintos neste dia e este é um novo
+      if (!alreadyThisHobby && hobbiesOnDay.size >= MAX_HOBBIES_PER_DAY) continue;
+
+      alloc[k] = hobby;
+      daySlotCount[s.d] = (daySlotCount[s.d] || 0) + 1;
+      if (!dayHobbiesUsed[s.d]) dayHobbiesUsed[s.d] = new Set();
+      dayHobbiesUsed[s.d].add(hobby.key);
+      placed++;
     }
   });
+
   return alloc;
 }
 
 function render() {
   const extra = ESTUDO_MODES[estudoMode].extraSlots;
-  const availForHobby = Math.max(0, SLOTS.length - extra);
+  const availForHobby = Math.max(0, ALL_SLOTS.length - extra);
   const total = totalHobby();
   const over = total > availForHobby;
   const pct = Math.min(100, Math.round(total / availForHobby * 100));
