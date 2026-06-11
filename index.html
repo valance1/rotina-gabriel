@@ -210,6 +210,25 @@
 
     <div class="divider"></div>
 
+    <div class="aside-title">Academia</div>
+    <div class="hobby-ctrl">
+      <div class="hobby-ctrl-top">
+        <div class="hobby-ctrl-name">
+          <div class="hobby-dot" style="background:var(--acad);"></div>
+          Treinos extras
+        </div>
+        <span class="hobby-val" style="color:#633806;" id="val-acad">padrão</span>
+      </div>
+      <div class="hobby-tag" id="acad-tag">Ter 12h · Qui 7h · Sex almoço · Sáb manhã</div>
+      <input type="range" min="0" max="2" step="1" value="0" id="slider-acad"
+        oninput="updateAcad(parseInt(this.value));">
+      <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--faint);margin-top:3px;">
+        <span>Padrão</span><span>+Seg 19h</span><span>+Seg+Qua</span>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
     <div class="aside-title">Horas por hobby</div>
     <div id="ctrl-area"></div>
 
@@ -278,6 +297,23 @@ const BASE = {
 };
 
 // Slots de estudo extra disponíveis (tomam slots de hobby quando intensidade sobe)
+const ACAD_MODES = [
+  { label:'padrão',      tag:'Ter 12h · Qui 7h · Sex almoço · Sáb manhã',          slots: []                          },
+  { label:'+Seg 19h',    tag:'+ treino segunda 19h–20h',                            slots: [{d:0,h:19}]                },
+  { label:'+Seg+Qua',    tag:'+ treino segunda 19h e quarta 20h',                   slots: [{d:0,h:19},{d:2,h:20}]     },
+];
+
+let academiaMode = 0;
+
+function updateAcad(val) {
+  academiaMode = val;
+  const m = ACAD_MODES[val];
+  document.getElementById('val-acad').textContent = m.label;
+  document.getElementById('acad-tag').textContent = m.tag;
+  saveHours();
+  render();
+}
+
 const ESTUDO_SLOTS = [
   // prioridade 1 — melhores janelas de estudo extra
   {d:1,h:16,p:1},{d:1,h:17,p:1},
@@ -340,7 +376,7 @@ function loadSaved() {
 }
 
 function saveHours() {
-  try { localStorage.setItem(LS_KEY, JSON.stringify({ hours: hobbyHours, estudo: estudoMode })); } catch(e) {}
+  try { localStorage.setItem(LS_KEY, JSON.stringify({ hours: hobbyHours, estudo: estudoMode, acad: academiaMode })); } catch(e) {}
   showSavedToast();
 }
 
@@ -361,22 +397,33 @@ if (saved?.estudo != null) {
   document.getElementById('val-estudo').textContent = m.label;
   document.getElementById('estudo-tag').textContent = m.tag;
 }
+if (saved?.acad != null) {
+  academiaMode = saved.acad;
+  document.getElementById('slider-acad').value = academiaMode;
+  const m = ACAD_MODES[academiaMode];
+  document.getElementById('val-acad').textContent = m.label;
+  document.getElementById('acad-tag').textContent = m.tag;
+}
 
 function totalHobby() { return Object.values(hobbyHours).reduce((a,b)=>a+b,0); }
 
 function buildAlloc() {
   const extra = ESTUDO_MODES[estudoMode].extraSlots;
-  // Quais slots viram estudo extra
+  const acadExtra = new Set(ACAD_MODES[academiaMode].slots.map(s => s.d+'|'+s.h));
+
+  // Slots de estudo extra (excluindo os que viram academia)
   const estudoExtra = new Set(
-    ESTUDO_SLOTS.slice(0, extra).map(s => s.d+'|'+s.h)
+    ESTUDO_SLOTS.slice(0, extra).map(s => s.d+'|'+s.h).filter(k => !acadExtra.has(k))
   );
-  // Slots de hobby disponíveis = SLOTS menos os tomados pelo estudo
-  const availSlots = SLOTS.filter(s => !estudoExtra.has(s.d+'|'+s.h))
-                          .sort((a,b) => a.p - b.p);
+
+  // Slots de hobby = SLOTS menos estudo extra menos academia extra
+  const availSlots = SLOTS
+    .filter(s => !estudoExtra.has(s.d+'|'+s.h) && !acadExtra.has(s.d+'|'+s.h))
+    .sort((a,b) => a.p - b.p);
 
   const alloc = {};
-  // Marcar estudo extra
   estudoExtra.forEach(k => { alloc[k] = '__estudo__'; });
+  acadExtra.forEach(k  => { alloc[k] = '__acad__';   });
 
   let si = 0;
   HOBBIES.forEach(h => {
@@ -414,7 +461,9 @@ function render() {
       const base = BASE[d] && BASE[d][h];
       if (a === '__estudo__') {
         html += `<div class="cal-cell" style="background:var(--estudo);color:var(--estudo-t);" title="Estudo extra">Est+</div>`;
-      } else if (a && a !== '__estudo__') {
+      } else if (a === '__acad__') {
+        html += `<div class="cal-cell" style="background:var(--acad);color:var(--acad-t);" title="Academia extra">Acad+</div>`;
+      } else if (a && a !== '__estudo__' && a !== '__acad__') {
         html += `<div class="cal-cell" style="background:${a.bg};color:${a.text};" title="${a.name}">${a.name.split('/')[0].slice(0,6)}</div>`;
       } else if (base && base !== 'livre') {
         const c = CAT[base];
@@ -465,9 +514,13 @@ function buildControls() {
 function resetHours() {
   HOBBIES.forEach(h => hobbyHours[h.key] = h.hours);
   estudoMode = 0;
+  academiaMode = 0;
   document.getElementById('slider-estudo').value = 0;
   document.getElementById('val-estudo').textContent = ESTUDO_MODES[0].label;
   document.getElementById('estudo-tag').textContent = ESTUDO_MODES[0].tag;
+  document.getElementById('slider-acad').value = 0;
+  document.getElementById('val-acad').textContent = ACAD_MODES[0].label;
+  document.getElementById('acad-tag').textContent = ACAD_MODES[0].tag;
   localStorage.removeItem(LS_KEY);
   buildControls();
   render();
