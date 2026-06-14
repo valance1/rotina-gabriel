@@ -352,36 +352,56 @@ function updateEstudo(val) {
 // dias: 0=Seg, 1=Ter, 2=Qua, 3=Qui, 4=Sex, 5=Sáb, 6=Dom
 const HOBBY_SLOTS = {
   desenho: [
+    // Primários — dias de foco
     {d:1,h:16,p:1},{d:1,h:17,p:1},
-    {d:3,h:9,p:2},{d:3,h:10,p:2},
+    {d:3,h:9,p:1},{d:3,h:10,p:1},
+    // Secundários
     {d:6,h:16,p:2},{d:6,h:17,p:2},
-    {d:4,h:18,p:3},{d:4,h:19,p:3},
-    {d:1,h:18,p:4},{d:1,h:19,p:4},
-    {d:0,h:20,p:5},{d:0,h:21,p:5},
+    {d:4,h:18,p:2},{d:4,h:19,p:2},
+    // Fallback — horários que estudo intensivo não toca
+    {d:1,h:18,p:3},{d:1,h:19,p:3},
+    {d:0,h:20,p:4},{d:0,h:21,p:4},
+    {d:3,h:21,p:4},{d:3,h:22,p:4},
+    {d:4,h:20,p:5},{d:4,h:21,p:5},
+    {d:6,h:19,p:5},{d:6,h:20,p:5},
   ],
   escult: [
+    // Primários
     {d:1,h:18,p:1},{d:1,h:19,p:1},
     {d:6,h:18,p:1},{d:6,h:19,p:1},
+    // Secundários
     {d:3,h:9,p:2},{d:3,h:10,p:2},
-    {d:4,h:20,p:3},{d:4,h:21,p:3},
-    {d:1,h:20,p:4},{d:1,h:21,p:4},
-    {d:6,h:20,p:4},{d:6,h:21,p:4},
+    {d:4,h:20,p:2},{d:4,h:21,p:2},
+    // Fallback
+    {d:1,h:20,p:3},{d:1,h:21,p:3},
+    {d:6,h:20,p:3},{d:6,h:21,p:3},
+    {d:3,h:21,p:4},{d:3,h:22,p:4},
+    {d:0,h:20,p:5},{d:0,h:21,p:5},
   ],
   anim: [
+    // Primários
     {d:4,h:18,p:1},{d:4,h:19,p:1},
     {d:6,h:16,p:1},{d:6,h:17,p:1},
+    // Secundários
     {d:1,h:20,p:2},{d:1,h:21,p:2},
+    // Fallback
     {d:4,h:21,p:3},{d:4,h:22,p:3},
     {d:6,h:19,p:3},{d:6,h:20,p:3},
+    {d:3,h:21,p:4},{d:3,h:22,p:4},
+    {d:0,h:20,p:5},{d:0,h:21,p:5},
   ],
   guitar: [
-    // Bom em dias pesados — baixa energia ok
+    // Dias pesados — energia baixa ok
     {d:0,h:20,p:1},{d:0,h:21,p:1},
     {d:2,h:21,p:1},{d:2,h:22,p:1},
+    // Secundários
     {d:4,h:18,p:2},{d:4,h:19,p:2},
     {d:6,h:18,p:2},{d:6,h:19,p:2},
+    // Fallback
     {d:1,h:22,p:3},{d:1,h:23,p:3},
     {d:3,h:21,p:3},{d:3,h:22,p:3},
+    {d:4,h:22,p:4},{d:4,h:23,p:4},
+    {d:6,h:21,p:4},{d:6,h:22,p:4},
   ],
   jogos: [
     // Só Seg, Qua, Sex, Dom
@@ -390,6 +410,8 @@ const HOBBY_SLOTS = {
     {d:4,h:19,p:2},{d:4,h:20,p:2},
     {d:6,h:19,p:2},{d:6,h:20,p:2},
     {d:0,h:23,p:3},{d:2,h:23,p:3},
+    {d:4,h:22,p:4},{d:4,h:23,p:4},
+    {d:6,h:21,p:4},{d:6,h:22,p:4},
   ],
 };
 
@@ -452,36 +474,67 @@ function buildAlloc() {
 
   const blocked = new Set([...estudoExtra, ...acadExtra]);
 
-  // Rastrear: quantos slots e quais hobbies distintos por dia
-  const daySlotCount   = {};  // d -> nº de slots de hobby alocados
-  const dayHobbiesUsed = {};  // d -> Set de chaves de hobby
-  const MAX_HOBBIES_PER_DAY = 2;
+  // Rastrear hobbies distintos por dia (máx 2)
+  const dayHobbiesUsed = {}; // d -> Set de hobby.key
+  const MAX_PER_DAY = 2;
 
-  HOBBIES.forEach(hobby => {
-    const n = Math.round(hobbyHours[hobby.key]);
-    if (n === 0) return;
+  // Quantas horas ainda faltam colocar por hobby
+  const remaining = {};
+  HOBBIES.forEach(h => { remaining[h.key] = Math.round(hobbyHours[h.key]); });
 
-    const candidates = (HOBBY_SLOTS[hobby.key] || [])
-      .filter(s => !blocked.has(s.d+'|'+s.h) && !alloc[s.d+'|'+s.h])
-      .sort((a,b) => a.p - b.p);
-
-    let placed = 0;
-    for (const s of candidates) {
-      if (placed >= n) break;
-      const k = s.d+'|'+s.h;
-      const hobbiesOnDay = dayHobbiesUsed[s.d] || new Set();
-      const alreadyThisHobby = hobbiesOnDay.has(hobby.key);
-
-      // Bloquear se já há 2 hobbies distintos neste dia e este é um novo
-      if (!alreadyThisHobby && hobbiesOnDay.size >= MAX_HOBBIES_PER_DAY) continue;
-
-      alloc[k] = hobby;
-      daySlotCount[s.d] = (daySlotCount[s.d] || 0) + 1;
-      if (!dayHobbiesUsed[s.d]) dayHobbiesUsed[s.d] = new Set();
-      dayHobbiesUsed[s.d].add(hobby.key);
-      placed++;
-    }
+  // Candidatos pré-filtrados por hobby (slot livre e não bloqueado)
+  // Ordenados por prioridade crescente
+  const candidates = {};
+  HOBBIES.forEach(h => {
+    candidates[h.key] = (HOBBY_SLOTS[h.key] || [])
+      .filter(s => !blocked.has(s.d+'|'+s.h))
+      .sort((a,b) => a.p - b.p || a.d - b.d || a.h - b.h);
   });
+
+  // Ponteiro de progresso por hobby
+  const ptr = {};
+  HOBBIES.forEach(h => { ptr[h.key] = 0; });
+
+  // Múltiplas passagens: em cada passagem cada hobby tenta colocar 1 slot
+  // Isso distribui os hobbies pelos dias em vez de empilhar
+  const maxPasses = 20;
+  for (let pass = 0; pass < maxPasses; pass++) {
+    let anyPlaced = false;
+
+    for (const hobby of HOBBIES) {
+      if (remaining[hobby.key] <= 0) continue;
+
+      const cands = candidates[hobby.key];
+      let placed = false;
+
+      while (ptr[hobby.key] < cands.length) {
+        const s = cands[ptr[hobby.key]];
+        ptr[hobby.key]++;
+        const k = s.d+'|'+s.h;
+
+        // Slot já ocupado?
+        if (alloc[k]) continue;
+
+        const hobbiesOnDay = dayHobbiesUsed[s.d] || new Set();
+        const alreadyThisHobby = hobbiesOnDay.has(hobby.key);
+
+        // Novo hobby neste dia mas dia já tem 2 hobbies distintos → pular
+        if (!alreadyThisHobby && hobbiesOnDay.size >= MAX_PER_DAY) continue;
+
+        // Alocar
+        alloc[k] = hobby;
+        if (!dayHobbiesUsed[s.d]) dayHobbiesUsed[s.d] = new Set();
+        dayHobbiesUsed[s.d].add(hobby.key);
+        remaining[hobby.key]--;
+        anyPlaced = true;
+        placed = true;
+        break;
+      }
+    }
+
+    // Se nenhum hobby conseguiu colocar nada nessa passagem, terminamos
+    if (!anyPlaced) break;
+  }
 
   return alloc;
 }
