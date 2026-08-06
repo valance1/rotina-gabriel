@@ -4,633 +4,435 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Rotina Semanal — Gabriel</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#F7F6F2;--surface:#fff;--border:rgba(44,44,42,.10);--border-md:rgba(44,44,42,.22);
+  --text:#2C2C2A;--muted:#888780;--faint:#C8C7BF;
+  --facul:#B5D4F4;--facul-t:#0C447C;
+  --estudo:#C0DD97;--estudo-t:#27500A;
+  --acad:#FAC775;--acad-t:#633806;
+  --namora:#F4C0D1;--namora-t:#72243E;
+  --preparo:#E8E6DF;--preparo-t:#888780;
+  --desenho:#378ADD;--desenho-bg:#D6EAFB;--desenho-t:#0C447C;
+  --escult:#1D9E75;--escult-bg:#D4F0E5;--escult-t:#085041;
+  --anim:#7F77DD;--anim-bg:#E4E2FC;--anim-t:#3C3489;
+  --guitar:#D85A30;--guitar-bg:#FAECE7;--guitar-t:#712B13;
+  --jogos:#D4537E;--jogos-bg:#FBEAF0;--jogos-t:#72243E;
+}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
 
-  :root {
-    --bg:       #F7F6F2;
-    --surface:  #FFFFFF;
-    --border:   rgba(44,44,42,0.10);
-    --border-md:rgba(44,44,42,0.18);
-    --text:     #2C2C2A;
-    --muted:    #888780;
-    --faint:    #C8C7BF;
+/* ── Header ── */
+header{background:var(--text);color:#fff;padding:.75rem 1.25rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200;gap:12px}
+header h1{font-size:13px;font-weight:600;white-space:nowrap}
+.sub{font-size:10px;color:rgba(255,255,255,.4);font-family:'JetBrains Mono',monospace}
 
-    --facul:    #B5D4F4; --facul-t: #0C447C;
-    --estudo:   #C0DD97; --estudo-t:#27500A;
-    --acad:     #FAC775; --acad-t:  #633806;
-    --namora:   #F4C0D1; --namora-t:#72243E;
-    --futebol:  #9FE1CB; --futebol-t:#085041;
-    --livre:    #EEECE5; --livre-t:  #888780;
+/* Presets */
+.preset-bar{display:flex;gap:6px;align-items:center}
+.preset-btn{font-size:11px;padding:5px 12px;border-radius:20px;border:1.5px solid rgba(255,255,255,.2);background:transparent;color:rgba(255,255,255,.6);cursor:pointer;font-family:inherit;transition:all .15s;white-space:nowrap}
+.preset-btn:hover{background:rgba(255,255,255,.08);color:#fff}
+.preset-btn.active{background:#fff;color:var(--text);border-color:#fff;font-weight:600}
+.preset-label{font-size:10px;color:rgba(255,255,255,.35);white-space:nowrap}
 
-    --desenho:  #378ADD; --desenho-bg:#E6F1FB; --desenho-t:#0C447C;
-    --escult:   #1D9E75; --escult-bg: #E1F5EE; --escult-t: #085041;
-    --anim:     #7F77DD; --anim-bg:   #EEEDFE; --anim-t:   #3C3489;
-    --guitar:   #D85A30; --guitar-bg: #FAECE7; --guitar-t: #712B13;
-    --jogos:    #D4537E; --jogos-bg:  #FBEAF0; --jogos-t:  #72243E;
+.hdr-actions{display:flex;gap:6px}
+.hdr-btn{font-size:11px;padding:4px 9px;border-radius:6px;border:1px solid rgba(255,255,255,.15);background:transparent;color:rgba(255,255,255,.6);cursor:pointer;font-family:inherit}
+.hdr-btn:hover{background:rgba(255,255,255,.08);color:#fff}
 
-    --radius:   10px;
-    --radius-sm:6px;
-  }
+/* ── Layout ── */
+.layout{display:grid;grid-template-columns:210px 1fr;min-height:calc(100vh - 48px)}
 
-  body {
-    font-family: 'Inter', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    padding: 0;
-  }
+/* ── Sidebar ── */
+aside{background:var(--surface);border-right:1px solid var(--border);padding:1rem .9rem;position:sticky;top:48px;height:calc(100vh - 48px);overflow-y:auto;display:flex;flex-direction:column;gap:0}
+.sec-title{font-size:10px;font-weight:600;letter-spacing:.08em;color:var(--muted);text-transform:uppercase;margin:.9rem 0 .5rem}
+.sec-title:first-child{margin-top:0}
+.divider{height:1px;background:var(--border);margin:.6rem 0}
 
-  header {
-    background: var(--text);
-    color: #fff;
-    padding: 1.25rem 2rem;
-    display: flex;
-    align-items: baseline;
-    gap: 1rem;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-  }
-  header h1 { font-size: 15px; font-weight: 600; letter-spacing: -0.01em; }
-  header span { font-size: 12px; color: rgba(255,255,255,0.45); font-family: 'JetBrains Mono', monospace; }
+/* Palette chips */
+.palette{display:flex;flex-direction:column;gap:5px}
+.chip{display:flex;align-items:center;gap:7px;padding:7px 9px;border-radius:8px;font-size:12px;font-weight:500;cursor:grab;user-select:none;transition:transform .1s,opacity .15s}
+.chip:active{cursor:grabbing;transform:scale(.96)}
+.chip.dragging{opacity:.35}
+.chip-dot{width:7px;height:7px;border-radius:2px;flex-shrink:0}
+.chip-hours{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);margin-left:auto}
 
-  .layout { display: grid; grid-template-columns: 280px 1fr; min-height: calc(100vh - 52px); }
+/* Mode sliders */
+.mode-group{margin-bottom:.6rem}
+.mode-label{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:4px}
+.mode-val{font-weight:500;color:var(--text)}
+input[type=range]{-webkit-appearance:none;width:100%;height:3px;background:var(--faint);border-radius:2px;outline:none;cursor:pointer;margin:2px 0}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:13px;height:13px;border-radius:50%;background:var(--text);border:2px solid var(--surface);box-shadow:0 0 0 1px var(--border-md);cursor:pointer}
+.mode-sub{font-size:10px;color:var(--faint);margin-top:2px;line-height:1.4}
 
-  /* ─── Sidebar ─── */
-  aside {
-    background: var(--surface);
-    border-right: 1px solid var(--border);
-    padding: 1.5rem 1.25rem;
-    position: sticky;
-    top: 52px;
-    height: calc(100vh - 52px);
-    overflow-y: auto;
-  }
-  .aside-title { font-size: 10px; font-weight: 600; letter-spacing: 0.08em; color: var(--muted); text-transform: uppercase; margin-bottom: 1rem; }
+/* Legend */
+.leg-list{display:flex;flex-direction:column;gap:4px}
+.leg-item{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted)}
+.leg-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0}
 
-  .hobby-ctrl { margin-bottom: 1.25rem; }
-  .hobby-ctrl-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
-  .hobby-ctrl-name { display: flex; align-items: center; gap: 7px; font-size: 13px; font-weight: 500; }
-  .hobby-dot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
-  .hobby-val { font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 500; }
-  .hobby-tag { font-size: 10px; color: var(--muted); margin-bottom: 5px; padding-left: 15px; }
+/* Bottom actions */
+.action-row{display:flex;gap:5px;margin-top:auto;padding-top:.75rem}
+.act-btn{flex:1;font-size:10px;padding:5px 4px;border-radius:6px;border:1px solid var(--border-md);background:transparent;color:var(--muted);cursor:pointer;font-family:inherit;text-align:center}
+.act-btn:hover{background:var(--bg);color:var(--text)}
 
-  input[type=range] {
-    -webkit-appearance: none;
-    width: 100%;
-    height: 4px;
-    background: var(--faint);
-    border-radius: 2px;
-    outline: none;
-    cursor: pointer;
-  }
-  input[type=range]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 16px; height: 16px;
-    border-radius: 50%;
-    background: var(--text);
-    border: 2px solid var(--surface);
-    box-shadow: 0 0 0 1px var(--border-md);
-    cursor: pointer;
-    transition: transform 0.1s;
-  }
-  input[type=range]:hover::-webkit-slider-thumb { transform: scale(1.15); }
-  input[type=range]::-moz-range-thumb {
-    width: 16px; height: 16px;
-    border-radius: 50%;
-    background: var(--text);
-    border: 2px solid var(--surface);
-    cursor: pointer;
-  }
+/* ── Calendar ── */
+main{padding:1rem 1.25rem;overflow:auto}
+.cal-wrap{min-width:600px}
+.cal-grid{display:grid;grid-template-columns:44px repeat(7,minmax(0,1fr));gap:2px}
+.cal-head{font-size:10px;font-weight:600;color:var(--muted);text-align:center;padding:4px 2px;letter-spacing:.03em}
+.cal-time{font-size:9px;font-family:'JetBrains Mono',monospace;color:var(--faint);text-align:right;padding-right:6px;height:34px;display:flex;align-items:center;justify-content:flex-end}
+.cal-cell{height:34px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;text-align:center;padding:0 3px;line-height:1.2;position:relative;transition:opacity .1s}
+.cal-cell.empty{background:rgba(44,44,42,.03)}
+.cal-cell.fixed{cursor:default}
+.cal-cell.hobby-cell{cursor:grab}
+.cal-cell.hobby-cell:active{cursor:grabbing}
+.cal-cell.hobby-cell:hover::after{content:'×';position:absolute;top:1px;right:3px;font-size:9px;opacity:.5}
+.cal-cell.drop-target{background:rgba(44,44,42,.05);border:1.5px dashed rgba(44,44,42,.15)}
+.cal-cell.drop-target.can-drop.drag-over{background:rgba(44,44,42,.12)!important;border-color:var(--text)!important}
+.cal-cell.drop-target.no-drop{opacity:.4;cursor:not-allowed}
 
-  .divider { height: 1px; background: var(--border); margin: 1.25rem 0; }
-
-  .total-section { margin-bottom: 1rem; }
-  .total-row { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-bottom: 6px; }
-  .total-bar-wrap { height: 5px; background: var(--faint); border-radius: 3px; overflow: hidden; }
-  .total-bar { height: 100%; border-radius: 3px; transition: width 0.3s, background 0.3s; }
-
-  .warn { font-size: 11px; color: #A32D2D; background: #FCEBEB; border-radius: var(--radius-sm); padding: 7px 10px; margin-top: 8px; display: none; }
-
-  .legend-section { margin-top: 1.25rem; }
-  .leg-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
-  .leg-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--muted); }
-  .leg-dot { width: 9px; height: 9px; border-radius: 2px; flex-shrink: 0; }
-
-  .summary-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 1.25rem; }
-  .sum-card { background: var(--bg); border-radius: var(--radius-sm); padding: 8px 10px; }
-  .sum-label { font-size: 10px; color: var(--muted); margin-bottom: 2px; }
-  .sum-val { font-size: 17px; font-weight: 600; font-family: 'JetBrains Mono', monospace; }
-  .sum-sub { font-size: 10px; color: var(--faint); margin-top: 1px; }
-
-  /* ─── Calendar ─── */
-  main { padding: 1.5rem; overflow-x: auto; }
-
-  .cal-grid {
-    display: grid;
-    grid-template-columns: 48px repeat(7, minmax(0,1fr));
-    gap: 2px;
-    min-width: 600px;
-  }
-  .cal-head {
-    font-size: 11px; font-weight: 600;
-    color: var(--muted);
-    text-align: center;
-    padding: 6px 2px;
-    letter-spacing: 0.03em;
-  }
-  .cal-time {
-    font-size: 10px;
-    font-family: 'JetBrains Mono', monospace;
-    color: var(--faint);
-    text-align: right;
-    padding-right: 8px;
-    height: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-  }
-  .cal-cell {
-    height: 30px;
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 10px;
-    font-weight: 500;
-    text-align: center;
-    padding: 1px 3px;
-    line-height: 1.2;
-    transition: opacity 0.15s;
-  }
-  .cal-cell.empty { background: rgba(44,44,42,0.04); }
-  .cal-cell:not(.empty):hover { opacity: 0.8; cursor: default; }
-
-  @media (max-width: 700px) {
-    .layout { grid-template-columns: 1fr; }
-    aside { position: static; height: auto; }
-    main { padding: 1rem; }
-  }
+/* Toast */
+#toast{position:fixed;bottom:18px;right:18px;background:var(--text);color:#fff;font-size:11px;padding:6px 12px;border-radius:8px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:999}
 </style>
-
-<div id="toast" style="position:fixed;bottom:24px;right:24px;background:#2C2C2A;color:#fff;font-size:12px;padding:8px 14px;border-radius:8px;opacity:0;transition:opacity 0.3s;pointer-events:none;font-family:'Inter',sans-serif;z-index:999;">
-  Salvo no navegador
-</div>
 </head>
 <body>
 
 <header>
-  <h1>Rotina Semanal</h1>
-  <span>Gabriel · UFMG Medicina · 2026</span>
+  <div>
+    <h1>Rotina Semanal</h1>
+    <div class="sub">Gabriel · UFMG Medicina</div>
+  </div>
+
+  <div style="display:flex;align-items:center;gap:10px;flex:1;justify-content:center">
+    <span class="preset-label">Preset</span>
+    <div class="preset-bar">
+      <button class="preset-btn active" id="pb0" onclick="switchPreset(0)">1 — Normal</button>
+      <button class="preset-btn"        id="pb1" onclick="switchPreset(1)">2 — Prova</button>
+      <button class="preset-btn"        id="pb2" onclick="switchPreset(2)">3 — Custom</button>
+    </div>
+    <button class="hdr-btn" onclick="saveCurrentPreset()" title="Salvar preset atual">💾 Salvar preset</button>
+  </div>
+
+  <div class="hdr-actions">
+    <button class="hdr-btn" onclick="undoLast()">↩ Desfazer</button>
+    <button class="hdr-btn" onclick="clearHobbies()">🗑 Limpar</button>
+  </div>
 </header>
 
 <div class="layout">
   <aside>
-    <div class="aside-title">Intensidade de estudo</div>
-    <div class="hobby-ctrl">
-      <div class="hobby-ctrl-top">
-        <div class="hobby-ctrl-name">
-          <div class="hobby-dot" style="background:var(--estudo);"></div>
-          Estudo
-        </div>
-        <span class="hobby-val" style="color:#27500A;" id="val-estudo">normal</span>
-      </div>
-      <div class="hobby-tag" id="estudo-tag">Semana normal — hobbies preservados</div>
-      <input type="range" min="0" max="2" step="1" value="0" id="slider-estudo"
-        oninput="updateEstudo(parseInt(this.value));">
-      <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--faint);margin-top:3px;">
-        <span>Normal</span><span>Prova</span><span>Intensivo</span>
-      </div>
+    <div class="sec-title">Arraste para a grade</div>
+    <div class="palette" id="palette"></div>
+
+    <div class="divider"></div>
+    <div class="sec-title">Estudo Extra</div>
+    <div class="mode-group">
+      <div class="mode-label"><span>Intensidade</span><span class="mode-val" id="val-estudo">normal</span></div>
+      <input type="range" min="0" max="2" step="1" value="0" id="slider-estudo" oninput="updateEstudo(+this.value)">
+      <div class="mode-sub" id="tag-estudo"></div>
+    </div>
+
+    <div class="sec-title">Academia Extra</div>
+    <div class="mode-group">
+      <div class="mode-label"><span>Treinos</span><span class="mode-val" id="val-acad">padrão</span></div>
+      <input type="range" min="0" max="2" step="1" value="0" id="slider-acad" oninput="updateAcad(+this.value)">
+      <div class="mode-sub" id="tag-acad"></div>
     </div>
 
     <div class="divider"></div>
+    <div class="sec-title">Legenda</div>
+    <div class="leg-list" id="legend"></div>
 
-    <div class="aside-title">Academia</div>
-    <div class="hobby-ctrl">
-      <div class="hobby-ctrl-top">
-        <div class="hobby-ctrl-name">
-          <div class="hobby-dot" style="background:var(--acad);"></div>
-          Treinos extras
-        </div>
-        <span class="hobby-val" style="color:#633806;" id="val-acad">padrão</span>
-      </div>
-      <div class="hobby-tag" id="acad-tag">Ter 12h · Qui 7h · Sex almoço · Sáb manhã</div>
-      <input type="range" min="0" max="2" step="1" value="0" id="slider-acad"
-        oninput="updateAcad(parseInt(this.value));">
-      <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--faint);margin-top:3px;">
-        <span>Padrão</span><span>+Seg 19h</span><span>+Seg+Qua</span>
-      </div>
-    </div>
-
-    <div class="divider"></div>
-
-    <div class="aside-title">Horas por hobby</div>
-    <div id="ctrl-area"></div>
-
-    <div class="divider"></div>
-
-    <div class="total-section">
-      <div class="total-row">
-        <span id="total-label">0h alocadas</span>
-        <span id="avail-label">16 slots livres</span>
-      </div>
-      <div class="total-bar-wrap"><div class="total-bar" id="total-bar"></div></div>
-      <div class="warn" id="warn-over">Mais horas do que slots disponíveis. Reduza algum hobby.</div>
-    </div>
-
-    <div style="display:flex;gap:8px;margin-top:10px;align-items:center;">
-      <button onclick="resetHours()" style="font-size:11px;padding:5px 10px;border-radius:6px;border:1px solid var(--border-md);background:transparent;color:var(--muted);cursor:pointer;font-family:inherit;">
-        Resetar padrão
-      </button>
-      <span style="font-size:11px;color:var(--muted);">Salvo automaticamente</span>
-    </div>
-
-    <div class="summary-cards" id="summary-area"></div>
-
-    <div class="divider"></div>
-
-    <div class="legend-section">
-      <div class="aside-title">Legenda</div>
-      <div class="leg-grid" id="legend-area"></div>
+    <div class="action-row">
+      <button class="act-btn" onclick="undoLast()">↩ Desfazer</button>
+      <button class="act-btn" onclick="clearHobbies()">🗑 Limpar</button>
     </div>
   </aside>
 
   <main>
-    <div class="cal-grid" id="cal-grid"></div>
+    <div class="cal-wrap">
+      <div class="cal-grid" id="cal-grid"></div>
+    </div>
   </main>
 </div>
+<div id="toast"></div>
 
 <script>
+const DAYS  = ['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'];
+const HOURS = Array.from({length:18},(_,i)=>i+6);
+
 const HOBBIES = [
-  { key:'desenho', name:'Desenho/Pintura', icon:'ti-brush',             color:'var(--desenho)', bg:'var(--desenho-bg)', text:'var(--desenho-t)', type:'port', hours:3   },
-  { key:'escult',  name:'Escultura 3D',    icon:'ti-box',               color:'var(--escult)',  bg:'var(--escult-bg)', text:'var(--escult-t)', type:'port', hours:2.5 },
-  { key:'anim',    name:'Animação',        icon:'ti-movie',             color:'var(--anim)',    bg:'var(--anim-bg)',   text:'var(--anim-t)',   type:'flex', hours:2   },
-  { key:'guitar',  name:'Guitarra',        icon:'ti-music',             color:'var(--guitar)',  bg:'var(--guitar-bg)', text:'var(--guitar-t)', type:'flex', hours:1.5 },
-  { key:'jogos',   name:'Jogos',           icon:'ti-device-gamepad-2',  color:'var(--jogos)',   bg:'var(--jogos-bg)',  text:'var(--jogos-t)',  type:'flex', hours:1   },
+  {key:'desenho',name:'Desenho/Pintura',color:'var(--desenho)',bg:'var(--desenho-bg)',text:'var(--desenho-t)'},
+  {key:'escult', name:'Escultura 3D',   color:'var(--escult)', bg:'var(--escult-bg)', text:'var(--escult-t)'},
+  {key:'anim',   name:'Animação',       color:'var(--anim)',   bg:'var(--anim-bg)',   text:'var(--anim-t)'},
+  {key:'guitar', name:'Guitarra',       color:'var(--guitar)', bg:'var(--guitar-bg)', text:'var(--guitar-t)'},
+  {key:'jogos',  name:'Jogos',          color:'var(--jogos)',  bg:'var(--jogos-bg)',  text:'var(--jogos-t)'},
+  {key:'acad',   name:'Academia (Alt)', color:'var(--acad)',   bg:'#FEF0D5',          text:'var(--acad-t)'},
 ];
+const HOBBY_MAP = Object.fromEntries(HOBBIES.map(h=>[h.key,h]));
 
-const CAT = {
-  facul:   { bg:'var(--facul)',   text:'var(--facul-t)',   label:'Faculdade' },
-  estudo:  { bg:'var(--estudo)',  text:'var(--estudo-t)',  label:'Estudo' },
-  acad:    { bg:'var(--acad)',    text:'var(--acad-t)',    label:'Academia' },
-  namora:  { bg:'var(--namora)', text:'var(--namora-t)',  label:'Namorada' },
-  futebol: { bg:'var(--futebol)',text:'var(--futebol-t)', label:'Futebol' },
-  livre:   { bg:'var(--livre)',   text:'var(--livre-t)',   label:'Livre' },
+const CAT_FIXED = {
+  facul:  {bg:'var(--facul)',  text:'var(--facul-t)',  label:'Faculdade'},
+  estudo: {bg:'var(--estudo)', text:'var(--estudo-t)', label:'Estudo'},
+  acad:   {bg:'var(--acad)',   text:'var(--acad-t)',   label:'Academia'},
+  namora: {bg:'var(--namora)', text:'var(--namora-t)', label:'Namorada'},
+  preparo:{bg:'var(--preparo)',text:'var(--preparo-t)',label:'Preparo'},
 };
-
-const DAYS = ['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'];
-const HOURS = Array.from({length:18}, (_,i) => i + 6); // 6h–23h — 18 slots
 
 const BASE = {
-  0:{6:'livre',7:'facul',8:'facul',9:'facul',10:'facul',11:'facul',12:'facul',13:'facul',14:'facul',15:'facul',16:'facul',17:'facul',18:'facul',19:'estudo',20:'livre',21:'livre',22:'livre',23:'livre'},
-  1:{7:'facul',8:'facul',9:'facul',10:'facul',11:'facul',12:'acad',13:'livre',14:'estudo',15:'estudo',16:'livre',17:'livre',18:'livre',19:'livre',20:'livre',21:'livre',22:'livre',23:'livre'},
-  2:{6:'livre',7:'facul',8:'facul',9:'facul',10:'facul',11:'facul',12:'facul',13:'facul',14:'facul',15:'facul',16:'facul',17:'facul',18:'facul',19:'facul',20:'estudo',21:'livre',22:'livre',23:'livre'},
-  3:{6:'livre',7:'acad',8:'acad',9:'livre',10:'livre',11:'facul',12:'facul',13:'facul',14:'facul',15:'facul',16:'facul',17:'facul',18:'livre',19:'futebol',20:'futebol',21:'livre',22:'livre',23:'livre'},
-  4:{6:'livre',7:'facul',8:'facul',9:'facul',10:'facul',11:'facul',12:'facul',13:'acad',14:'livre',15:'facul',16:'facul',17:'facul',18:'livre',19:'livre',20:'estudo',21:'livre',22:'livre',23:'livre'},
-  5:{7:'acad',8:'acad',9:'namora',10:'namora',11:'namora',12:'namora',13:'namora',14:'namora',15:'namora',16:'namora',17:'namora',18:'namora',19:'namora',20:'livre',21:'livre',22:'livre',23:'livre'},
-  6:{8:'namora',9:'namora',10:'namora',11:'namora',12:'namora',13:'livre',14:'estudo',15:'estudo',16:'livre',17:'livre',18:'livre',19:'livre',20:'livre',21:'livre',22:'livre',23:'livre'},
+  0:{6:'preparo',7:'preparo',8:'facul',9:'facul',10:'facul',11:'facul',12:'facul',13:'facul',14:'facul',15:'facul',16:'facul',17:'facul',18:'facul',19:'estudo',20:null,21:null,22:null,23:null},
+  1:{6:'preparo',7:'preparo',8:'facul',9:'facul',10:'facul',11:'facul',12:'facul',13:'facul',14:'facul',15:'facul',16:'acad',17:'estudo',18:'estudo',19:null,20:null,21:null,22:null,23:null},
+  2:{6:'preparo',7:'preparo',8:'estudo',9:'estudo',10:null,11:null,12:'facul',13:'facul',14:'facul',15:'facul',16:'facul',17:'facul',18:'facul',19:null,20:null,21:null,22:null,23:null},
+  3:{6:'preparo',7:'preparo',8:'facul',9:'facul',10:'facul',11:'facul',12:'facul',13:'facul',14:'facul',15:'facul',16:'facul',17:'facul',18:'facul',19:'estudo',20:null,21:null,22:null,23:null},
+  4:{6:'preparo',7:'preparo',8:'facul',9:'facul',10:'facul',11:'facul',12:'facul',13:'estudo',14:'estudo',15:null,16:null,17:null,18:'acad',19:null,20:null,21:null,22:null,23:null},
+  5:{6:'preparo',7:'preparo',8:'acad',9:'namora',10:'namora',11:'namora',12:'namora',13:'namora',14:'namora',15:'namora',16:'namora',17:'namora',18:'namora',19:'namora',20:'namora',21:'namora',22:'namora',23:'namora'},
+  6:{6:'preparo',7:'preparo',8:'acad',9:'estudo',10:'estudo',11:null,12:null,13:null,14:null,15:null,16:null,17:null,18:null,19:null,20:null,21:null,22:null,23:null},
 };
 
-// Slots de estudo extra disponíveis (tomam slots de hobby quando intensidade sobe)
-const ACAD_MODES = [
-  { label:'padrão',      tag:'Ter 12h · Qui 7h · Sex almoço · Sáb manhã',          slots: []                          },
-  { label:'+Seg 19h',    tag:'+ treino segunda 19h–20h',                            slots: [{d:0,h:19}]                },
-  { label:'+Seg+Qua',    tag:'+ treino segunda 19h e quarta 20h',                   slots: [{d:0,h:19},{d:2,h:20}]     },
+const ESTUDO_MODES=[
+  {label:'normal',     tag:'Fixo: Seg 19h · Ter 17–18h · Qua 8–9h · Qui 19h · Sex 13–14h · Dom 9–10h', slots:[]},
+  {label:'prova 📝',   tag:'+ Qua 10–11h, Sex 15–16h, Ter 19–20h',    slots:[{d:2,h:10},{d:2,h:11},{d:4,h:15},{d:4,h:16},{d:1,h:19},{d:1,h:20}]},
+  {label:'intensivo 🔥',tag:'+ todas as janelas disponíveis',           slots:[{d:2,h:10},{d:2,h:11},{d:4,h:15},{d:4,h:16},{d:1,h:19},{d:1,h:20},{d:6,h:11},{d:6,h:12},{d:0,h:20},{d:3,h:20}]},
+];
+const ACAD_MODES=[
+  {label:'padrão',     tag:'Ter 16h · Sex 18h · Sáb 8h · Dom 8h', slots:[]},
+  {label:'+Qua manhã', tag:'+ quarta 10h',                         slots:[{d:2,h:10}]},
+  {label:'+Qua+Qui',   tag:'+ quarta 10h e quinta 20h',            slots:[{d:2,h:10},{d:3,h:20}]},
 ];
 
-let academiaMode = 0;
+// ── Presets ──────────────────────────────────────────────────────────
+const LS_KEY = 'rotina_presets_v1';
+const PRESET_NAMES = ['Normal','Prova','Custom'];
+const N_PRESETS = 3;
 
-function updateAcad(val) {
-  academiaMode = val;
-  const m = ACAD_MODES[val];
-  document.getElementById('val-acad').textContent = m.label;
-  document.getElementById('acad-tag').textContent = m.tag;
-  saveHours();
-  render();
-}
+let presets = Array.from({length:N_PRESETS}, ()=>({alloc:{},estudo:0,acad:0}));
+let activePreset = 0;
 
-const ESTUDO_SLOTS = [
-  // prioridade 1 — melhores janelas de estudo extra
-  {d:1,h:16,p:1},{d:1,h:17,p:1},
-  {d:6,h:14,p:1},{d:6,h:15,p:1},
-  // prioridade 2
-  {d:4,h:18,p:2},{d:4,h:19,p:2},
-  {d:0,h:20,p:2},{d:0,h:21,p:2},
-  {d:3,h:9,p:2},{d:3,h:10,p:2},
-  // prioridade 3 — intensivo (come mais fundo nos hobbies)
-  {d:1,h:18,p:3},{d:1,h:19,p:3},{d:1,h:20,p:3},
-  {d:6,h:16,p:3},{d:6,h:17,p:3},{d:6,h:18,p:3},
-  {d:2,h:21,p:3},{d:2,h:22,p:3},
-  {d:4,h:21,p:3},{d:4,h:22,p:3},
-  {d:0,h:22,p:3},{d:0,h:23,p:3},
-];
-
-const ESTUDO_MODES = [
-  { label:'normal',    tag:'Semana normal — hobbies preservados',          extraSlots: 0  },
-  { label:'prova 📝',  tag:'Semana de prova — estudo toma slots de hobby', extraSlots: 8  },
-  { label:'intensivo 🔥', tag:'Intensivo — estudo maximizado',             extraSlots: 18 },
-];
-
+let userAlloc  = {};
 let estudoMode = 0;
+let acadMode   = 0;
+let history    = [];
 
-function updateEstudo(val) {
-  estudoMode = val;
-  const m = ESTUDO_MODES[val];
-  document.getElementById('val-estudo').textContent = m.label;
-  document.getElementById('estudo-tag').textContent = m.tag;
-  // salvar modo estudo junto
-  saveHours();
-  render();
+function snapshot() {
+  history.push(JSON.stringify(userAlloc));
+  if(history.length>60) history.shift();
 }
 
-// Slots disponíveis por hobby — com dias permitidos
-// dias: 0=Seg, 1=Ter, 2=Qua, 3=Qui, 4=Sex, 5=Sáb, 6=Dom
-const HOBBY_SLOTS = {
-  desenho: [
-    // Primários — dias de foco
-    {d:1,h:16,p:1},{d:1,h:17,p:1},
-    {d:3,h:9,p:1},{d:3,h:10,p:1},
-    // Secundários
-    {d:6,h:16,p:2},{d:6,h:17,p:2},
-    {d:4,h:18,p:2},{d:4,h:19,p:2},
-    // Fallback — horários que estudo intensivo não toca
-    {d:1,h:18,p:3},{d:1,h:19,p:3},
-    {d:0,h:20,p:4},{d:0,h:21,p:4},
-    {d:3,h:21,p:4},{d:3,h:22,p:4},
-    {d:4,h:20,p:5},{d:4,h:21,p:5},
-    {d:6,h:19,p:5},{d:6,h:20,p:5},
-  ],
-  escult: [
-    // Primários
-    {d:1,h:18,p:1},{d:1,h:19,p:1},
-    {d:6,h:18,p:1},{d:6,h:19,p:1},
-    // Secundários
-    {d:3,h:9,p:2},{d:3,h:10,p:2},
-    {d:4,h:20,p:2},{d:4,h:21,p:2},
-    // Fallback
-    {d:1,h:20,p:3},{d:1,h:21,p:3},
-    {d:6,h:20,p:3},{d:6,h:21,p:3},
-    {d:3,h:21,p:4},{d:3,h:22,p:4},
-    {d:0,h:20,p:5},{d:0,h:21,p:5},
-  ],
-  anim: [
-    // Primários
-    {d:4,h:18,p:1},{d:4,h:19,p:1},
-    {d:6,h:16,p:1},{d:6,h:17,p:1},
-    // Secundários
-    {d:1,h:20,p:2},{d:1,h:21,p:2},
-    // Fallback
-    {d:4,h:21,p:3},{d:4,h:22,p:3},
-    {d:6,h:19,p:3},{d:6,h:20,p:3},
-    {d:3,h:21,p:4},{d:3,h:22,p:4},
-    {d:0,h:20,p:5},{d:0,h:21,p:5},
-  ],
-  guitar: [
-    // Dias pesados — energia baixa ok
-    {d:0,h:20,p:1},{d:0,h:21,p:1},
-    {d:2,h:21,p:1},{d:2,h:22,p:1},
-    // Secundários
-    {d:4,h:18,p:2},{d:4,h:19,p:2},
-    {d:6,h:18,p:2},{d:6,h:19,p:2},
-    // Fallback
-    {d:1,h:22,p:3},{d:1,h:23,p:3},
-    {d:3,h:21,p:3},{d:3,h:22,p:3},
-    {d:4,h:22,p:4},{d:4,h:23,p:4},
-    {d:6,h:21,p:4},{d:6,h:22,p:4},
-  ],
-  jogos: [
-    // Só Seg, Qua, Sex, Dom
-    {d:0,h:21,p:1},{d:0,h:22,p:1},
-    {d:2,h:21,p:1},{d:2,h:22,p:1},
-    {d:4,h:19,p:2},{d:4,h:20,p:2},
-    {d:6,h:19,p:2},{d:6,h:20,p:2},
-    {d:0,h:23,p:3},{d:2,h:23,p:3},
-    {d:4,h:22,p:4},{d:4,h:23,p:4},
-    {d:6,h:21,p:4},{d:6,h:22,p:4},
-  ],
-};
+function persistAll() {
+  presets[activePreset] = {alloc:{...userAlloc}, estudo:estudoMode, acad:acadMode};
+  try { localStorage.setItem(LS_KEY, JSON.stringify({presets, active:activePreset})); } catch(e){}
+}
 
-// Todos os slots únicos para cálculo de disponibilidade
-const ALL_SLOTS = Object.values(HOBBY_SLOTS).flat()
-  .filter((s,i,a) => a.findIndex(x=>x.d===s.d&&x.h===s.h)===i);
-
-const LS_KEY = 'rotina_gabriel_v2';
-
-function loadSaved() {
+function loadAll() {
   try {
-    const raw = localStorage.getItem(LS_KEY);
-    if (raw) return JSON.parse(raw);
-  } catch(e) {}
-  return null;
+    const r = localStorage.getItem(LS_KEY);
+    if(!r) return;
+    const s = JSON.parse(r);
+    if(s.presets && Array.isArray(s.presets)) presets = s.presets;
+    activePreset = s.active || 0;
+    applyPreset(activePreset, false);
+  } catch(e){}
 }
 
-function saveHours() {
-  try { localStorage.setItem(LS_KEY, JSON.stringify({ hours: hobbyHours, estudo: estudoMode, acad: academiaMode })); } catch(e) {}
-  showSavedToast();
-}
-
-function showSavedToast() {
-  const t = document.getElementById('toast');
-  t.style.opacity = '1';
-  clearTimeout(window._toastTimer);
-  window._toastTimer = setTimeout(() => { t.style.opacity = '0'; }, 1800);
-}
-
-let hobbyHours = {};
-const saved = loadSaved();
-HOBBIES.forEach(h => hobbyHours[h.key] = saved ? (saved.hours?.[h.key] ?? h.hours) : h.hours);
-if (saved?.estudo != null) {
-  estudoMode = saved.estudo;
+function applyPreset(idx, save=true) {
+  activePreset = idx;
+  const p = presets[idx];
+  userAlloc  = p.alloc  ? {...p.alloc}  : {};
+  estudoMode = p.estudo || 0;
+  acadMode   = p.acad   || 0;
+  history    = [];
   document.getElementById('slider-estudo').value = estudoMode;
-  const m = ESTUDO_MODES[estudoMode];
-  document.getElementById('val-estudo').textContent = m.label;
-  document.getElementById('estudo-tag').textContent = m.tag;
-}
-if (saved?.acad != null) {
-  academiaMode = saved.acad;
-  document.getElementById('slider-acad').value = academiaMode;
-  const m = ACAD_MODES[academiaMode];
-  document.getElementById('val-acad').textContent = m.label;
-  document.getElementById('acad-tag').textContent = m.tag;
+  document.getElementById('slider-acad').value   = acadMode;
+  applyModeLabels();
+  renderPresetBtns();
+  render();
+  if(save) persistAll();
 }
 
-function totalHobby() { return Object.values(hobbyHours).reduce((a,b)=>a+b,0); }
+function switchPreset(idx) {
+  presets[activePreset] = {alloc:{...userAlloc}, estudo:estudoMode, acad:acadMode};
+  applyPreset(idx);
+}
 
-function buildAlloc() {
-  const extra = ESTUDO_MODES[estudoMode].extraSlots;
-  const acadExtra = new Set(ACAD_MODES[academiaMode].slots.map(s => s.d+'|'+s.h));
-  const estudoExtra = new Set(
-    ESTUDO_SLOTS.slice(0, extra).map(s => s.d+'|'+s.h).filter(k => !acadExtra.has(k))
-  );
+function saveCurrentPreset() {
+  persistAll();
+  toast(`Preset ${activePreset+1} salvo!`);
+}
 
-  const alloc = {};
-  estudoExtra.forEach(k => { alloc[k] = '__estudo__'; });
-  acadExtra.forEach(k  => { alloc[k] = '__acad__'; });
-
-  const blocked = new Set([...estudoExtra, ...acadExtra]);
-
-  // Rastrear hobbies distintos por dia (máx 2)
-  const dayHobbiesUsed = {}; // d -> Set de hobby.key
-  const MAX_PER_DAY = 2;
-
-  // Quantas horas ainda faltam colocar por hobby
-  const remaining = {};
-  HOBBIES.forEach(h => { remaining[h.key] = Math.round(hobbyHours[h.key]); });
-
-  // Candidatos pré-filtrados por hobby (slot livre e não bloqueado)
-  // Ordenados por prioridade crescente
-  const candidates = {};
-  HOBBIES.forEach(h => {
-    candidates[h.key] = (HOBBY_SLOTS[h.key] || [])
-      .filter(s => !blocked.has(s.d+'|'+s.h))
-      .sort((a,b) => a.p - b.p || a.d - b.d || a.h - b.h);
-  });
-
-  // Ponteiro de progresso por hobby
-  const ptr = {};
-  HOBBIES.forEach(h => { ptr[h.key] = 0; });
-
-  // Múltiplas passagens: em cada passagem cada hobby tenta colocar 1 slot
-  // Isso distribui os hobbies pelos dias em vez de empilhar
-  const maxPasses = 20;
-  for (let pass = 0; pass < maxPasses; pass++) {
-    let anyPlaced = false;
-
-    for (const hobby of HOBBIES) {
-      if (remaining[hobby.key] <= 0) continue;
-
-      const cands = candidates[hobby.key];
-      let placed = false;
-
-      while (ptr[hobby.key] < cands.length) {
-        const s = cands[ptr[hobby.key]];
-        ptr[hobby.key]++;
-        const k = s.d+'|'+s.h;
-
-        // Slot já ocupado?
-        if (alloc[k]) continue;
-
-        const hobbiesOnDay = dayHobbiesUsed[s.d] || new Set();
-        const alreadyThisHobby = hobbiesOnDay.has(hobby.key);
-
-        // Novo hobby neste dia mas dia já tem 2 hobbies distintos → pular
-        if (!alreadyThisHobby && hobbiesOnDay.size >= MAX_PER_DAY) continue;
-
-        // Alocar
-        alloc[k] = hobby;
-        if (!dayHobbiesUsed[s.d]) dayHobbiesUsed[s.d] = new Set();
-        dayHobbiesUsed[s.d].add(hobby.key);
-        remaining[hobby.key]--;
-        anyPlaced = true;
-        placed = true;
-        break;
-      }
-    }
-
-    // Se nenhum hobby conseguiu colocar nada nessa passagem, terminamos
-    if (!anyPlaced) break;
+function renderPresetBtns() {
+  for(let i=0;i<N_PRESETS;i++) {
+    const btn = document.getElementById('pb'+i);
+    if(btn) btn.classList.toggle('active', i===activePreset);
   }
-
-  return alloc;
 }
 
+function applyModeLabels() {
+  const em=ESTUDO_MODES[estudoMode];
+  document.getElementById('val-estudo').textContent=em.label;
+  document.getElementById('tag-estudo').textContent=em.tag;
+  const am=ACAD_MODES[acadMode];
+  document.getElementById('val-acad').textContent=am.label;
+  document.getElementById('tag-acad').textContent=am.tag;
+}
+
+function updateEstudo(v){estudoMode=v;applyModeLabels();render();persistAll();}
+function updateAcad(v){acadMode=v;applyModeLabels();render();persistAll();}
+
+// ── Drop validation (Totalmente livre agora) ───────────────────────────
+function isDropAllowed(hobbyKey, d, h) {
+  const hb = HOBBY_MAP[hobbyKey];
+  if(!hb) return false;
+  
+  // Apenas impede se o bloco colidir com um horário FIXO de faculdade ou estudo base
+  const base = BASE[d]?.[h];
+  if(base) return false;
+  
+  const extraAcad  = new Set(ACAD_MODES[acadMode].slots.map(s=>s.d+'|'+s.h));
+  const extraEst   = new Set(ESTUDO_MODES[estudoMode].slots.map(s=>s.d+'|'+s.h));
+  const k = d+'|'+h;
+  if(extraAcad.has(k)||extraEst.has(k)) return false;
+  
+  return true;
+}
+
+// ── Drag state ────────────────────────────────────────────────────────
+let dragKey = null;
+let dragFromCell = null;
+
+// ── Render ────────────────────────────────────────────────────────────
 function render() {
-  const extra = ESTUDO_MODES[estudoMode].extraSlots;
-  const availForHobby = Math.max(0, ALL_SLOTS.length - extra);
-  const total = totalHobby();
-  const over = total > availForHobby;
-  const pct = Math.min(100, Math.round(total / availForHobby * 100));
-
-  document.getElementById('total-label').textContent = total.toFixed(1) + 'h hobby';
-  document.getElementById('avail-label').textContent = availForHobby + ' slots livres';
-  const bar = document.getElementById('total-bar');
-  bar.style.width = (availForHobby > 0 ? pct : 0) + '%';
-  bar.style.background = over ? '#E24B4A' : total > availForHobby * 0.8 ? '#BA7517' : '#1D9E75';
-  document.getElementById('warn-over').style.display = over ? 'block' : 'none';
-
-  const alloc = buildAlloc();
-  const grid = document.getElementById('cal-grid');
-  let html = '<div class="cal-time"></div>';
-  DAYS.forEach(d => { html += `<div class="cal-head">${d}</div>`; });
-  HOURS.forEach(h => {
-    html += `<div class="cal-time">${h}h</div>`;
-    for (let d = 0; d < 7; d++) {
-      const k = d+'|'+h;
-      const a = alloc[k];
-      const base = BASE[d] && BASE[d][h];
-      if (a === '__estudo__') {
-        html += `<div class="cal-cell" style="background:var(--estudo);color:var(--estudo-t);" title="Estudo extra">Est+</div>`;
-      } else if (a === '__acad__') {
-        html += `<div class="cal-cell" style="background:var(--acad);color:var(--acad-t);" title="Academia extra">Acad+</div>`;
-      } else if (a && a !== '__estudo__' && a !== '__acad__') {
-        html += `<div class="cal-cell" style="background:${a.bg};color:${a.text};" title="${a.name}">${a.name.split('/')[0].slice(0,6)}</div>`;
-      } else if (base && base !== 'livre') {
-        const c = CAT[base];
-        html += `<div class="cal-cell" style="background:${c.bg};color:${c.text};" title="${c.label}">${c.label.slice(0,4)}</div>`;
-      } else {
-        html += `<div class="cal-cell empty"></div>`;
-      }
-    }
-  });
-  grid.innerHTML = html;
-
-  const sum = document.getElementById('summary-area');
-  sum.innerHTML = HOBBIES.map(h => {
-    const hrs = hobbyHours[h.key];
-    return `<div class="sum-card">
-      <div class="sum-label">${h.name.split('/')[0]}</div>
-      <div class="sum-val" style="color:${h.color};">${hrs.toFixed(1)}h</div>
-      <div class="sum-sub">${Math.round(hrs*60)} min/sem</div>
-    </div>`;
-  }).join('');
+  renderPalette();
+  renderCalendar();
+  renderLegend();
 }
 
-function buildControls() {
-  document.getElementById('ctrl-area').innerHTML = HOBBIES.map(h => `
-    <div class="hobby-ctrl">
-      <div class="hobby-ctrl-top">
-        <div class="hobby-ctrl-name">
-          <div class="hobby-dot" style="background:${h.color};"></div>
-          ${h.name}
-        </div>
-        <span class="hobby-val" style="color:${h.color};" id="val-${h.key}">${hobbyHours[h.key].toFixed(1)}h</span>
-      </div>
-      <div class="hobby-tag">${h.type === 'port' ? 'Portfólio — manter constante' : 'Flexível — ajuste pelo humor'}</div>
-      <input type="range" min="0" max="6" step="0.5" value="${hobbyHours[h.key]}"
-        oninput="hobbyHours['${h.key}']=parseFloat(this.value);document.getElementById('val-${h.key}').textContent=parseFloat(this.value).toFixed(1)+'h';render();saveHours();">
+function renderPalette() {
+  const counts={};
+  HOBBIES.forEach(h=>{counts[h.key]=0;});
+  Object.values(userAlloc).forEach(k=>{if(k&&counts[k]!==undefined)counts[k]++;});
+
+  document.getElementById('palette').innerHTML=HOBBIES.map(h=>`
+    <div class="chip" id="chip-${h.key}" draggable="true"
+      style="background:${h.bg};color:${h.text}"
+      ondragstart="onChipDragStart(event,'${h.key}')"
+      ondragend="onDragEnd()">
+      <div class="chip-dot" style="background:${h.color}"></div>
+      <span>${h.name}</span>
+      <span class="chip-hours">${counts[h.key]}h</span>
     </div>
   `).join('');
-
-  const catEntries = Object.entries(CAT).map(([,v]) =>
-    `<div class="leg-item"><div class="leg-dot" style="background:${v.bg};border:1px solid rgba(0,0,0,0.1);"></div>${v.label}</div>`
-  ).join('');
-  const hobbyEntries = HOBBIES.map(h =>
-    `<div class="leg-item"><div class="leg-dot" style="background:${h.bg};border:1px solid rgba(0,0,0,0.1);"></div>${h.name.split('/')[0]}</div>`
-  ).join('');
-  document.getElementById('legend-area').innerHTML = catEntries + hobbyEntries;
 }
 
-function resetHours() {
-  HOBBIES.forEach(h => hobbyHours[h.key] = h.hours);
-  estudoMode = 0;
-  academiaMode = 0;
-  document.getElementById('slider-estudo').value = 0;
-  document.getElementById('val-estudo').textContent = ESTUDO_MODES[0].label;
-  document.getElementById('estudo-tag').textContent = ESTUDO_MODES[0].tag;
-  document.getElementById('slider-acad').value = 0;
-  document.getElementById('val-acad').textContent = ACAD_MODES[0].label;
-  document.getElementById('acad-tag').textContent = ACAD_MODES[0].tag;
-  localStorage.removeItem(LS_KEY);
-  buildControls();
-  render();
+function renderCalendar() {
+  const extraEstudo = new Set(ESTUDO_MODES[estudoMode].slots.map(s=>s.d+'|'+s.h));
+  const extraAcad   = new Set(ACAD_MODES[acadMode].slots.map(s=>s.d+'|'+s.h));
+
+  let html='<div></div>';
+  DAYS.forEach(d=>{html+=`<div class="cal-head">${d}</div>`;});
+
+  for(const h of HOURS) {
+    html+=`<div class="cal-time">${h}h</div>`;
+    for(let d=0;d<7;d++) {
+      const k=d+'|'+h;
+      const base=BASE[d]?.[h];
+      const isExtraAcad  = extraAcad.has(k);
+      const isExtraEst   = extraEstudo.has(k);
+
+      if(base||isExtraAcad||isExtraEst) {
+        const cat = base||(isExtraAcad?'acad':'estudo');
+        const c=CAT_FIXED[cat]||{bg:'var(--faint)',text:'var(--muted)',label:''};
+        html+=`<div class="cal-cell fixed" style="background:${c.bg};color:${c.text}">${c.label.slice(0,4)}</div>`;
+      } else if(userAlloc[k]) {
+        const hb=HOBBY_MAP[userAlloc[k]];
+        if(hb) {
+          html+=`<div class="cal-cell hobby-cell" style="background:${hb.bg};color:${hb.text}"
+            draggable="true"
+            ondragstart="onCellDragStart(event,'${hb.key}','${k}')"
+            ondragend="onDragEnd()"
+            onclick="removeHobby('${k}')"
+            title="${hb.name} — clique para remover"
+          >${hb.name.split('/')[0].slice(0,6)}</div>`;
+        } else {
+          html+=`<div class="cal-cell empty"></div>`;
+        }
+      } else {
+        const allowed = dragKey ? isDropAllowed(dragKey,d,h) : true;
+        html+=`<div class="cal-cell drop-target ${dragKey?(allowed?'can-drop':'no-drop'):''}"
+          ondragover="onDragOver(event,${d},${h})"
+          ondragleave="onDragLeave(event)"
+          ondrop="onDrop(event,'${k}',${d},${h})"
+        ></div>`;
+      }
+    }
+  }
+  document.getElementById('cal-grid').innerHTML=html;
 }
 
-buildControls();
+function renderLegend() {
+  document.getElementById('legend').innerHTML=[
+    ...Object.entries(CAT_FIXED).map(([,v])=>`<div class="leg-item"><div class="leg-dot" style="background:${v.bg};border:1px solid rgba(0,0,0,.07)"></div>${v.label}</div>`),
+    ...HOBBIES.map(h=>`<div class="leg-item"><div class="leg-dot" style="background:${h.bg};border:1px solid rgba(0,0,0,.07)"></div>${h.name.split('/')[0]}</div>`)
+  ].join('');
+}
+
+// ── Drag handlers ─────────────────────────────────────────────────────
+function onChipDragStart(e,key){
+  dragKey=key; dragFromCell=null;
+  e.dataTransfer.effectAllowed='copy';
+  document.getElementById('chip-'+key)?.classList.add('dragging');
+  setTimeout(()=>renderCalendar(),0);
+}
+function onCellDragStart(e,key,fromK){
+  dragKey=key; dragFromCell=fromK;
+  e.dataTransfer.effectAllowed='move';
+  setTimeout(()=>renderCalendar(),0);
+}
+function onDragEnd(){
+  dragKey=null; dragFromCell=null;
+  document.querySelectorAll('.chip.dragging').forEach(el=>el.classList.remove('dragging'));
+  renderCalendar();
+}
+function onDragOver(e,d,h){
+  if(!dragKey||!isDropAllowed(dragKey,d,h)) return;
+  e.preventDefault();
+  e.dataTransfer.dropEffect=dragFromCell?'move':'copy';
+  e.currentTarget.classList.add('drag-over');
+}
+function onDragLeave(e){ e.currentTarget.classList.remove('drag-over'); }
+function onDrop(e,k,d,h){
+  e.preventDefault();
+  if(!dragKey) return;
+  if(!isDropAllowed(dragKey,d,h)){toast('Não permitido aqui');return;}
+  snapshot();
+  if(dragFromCell){delete userAlloc[dragFromCell];}
+  userAlloc[k]=dragKey;
+  dragKey=null; dragFromCell=null;
+  render(); persistAll();
+}
+function removeHobby(k){
+  snapshot();
+  delete userAlloc[k];
+  render(); persistAll();
+}
+function undoLast(){
+  if(!history.length){toast('Nada para desfazer');return;}
+  userAlloc=JSON.parse(history.pop());
+  render(); persistAll();
+  toast('Desfeito');
+}
+function clearHobbies(){
+  snapshot(); userAlloc={}; render(); persistAll();
+  toast('Hobbies removidos');
+}
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.style.opacity='1';
+  clearTimeout(window._tt);
+  window._tt=setTimeout(()=>{t.style.opacity='0';},1800);
+}
+
+// ── Init ──────────────────────────────────────────────────────────────
+loadAll();
+applyModeLabels();
 render();
 </script>
 </body>
