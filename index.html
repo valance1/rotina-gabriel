@@ -116,10 +116,14 @@ main{padding:1rem 1.1rem;overflow:auto}
     <button class="pb"        id="pb1" onclick="switchPreset(1)">2 — Prova</button>
     <button class="pb"        id="pb2" onclick="switchPreset(2)">3 — Custom</button>
     <button class="hdr-btn"   onclick="saveCurrentPreset()">💾 Salvar preset</button>
+    <span id="sync-status" style="font-size:10px;color:rgba(255,255,255,.35);white-space:nowrap;margin-left:4px;">☁️ Não salvo na nuvem</span>
   </div>
   <div class="hdr-actions">
     <button class="hdr-btn" onclick="undoLast()">↩ Desfazer</button>
     <button class="hdr-btn" onclick="clearHobbies()">🗑 Limpar</button>
+    <button class="hdr-btn" onclick="exportJSON()">⬇ Exportar</button>
+    <button class="hdr-btn" onclick="document.getElementById('import-input').click()">⬆ Importar</button>
+    <input type="file" id="import-input" accept=".json" style="display:none" onchange="importJSON(event)">
   </div>
 </header>
 
@@ -225,20 +229,94 @@ const ACAD_MODES=[
 const LS_KEY = 'rotina_v2';
 let presets = Array.from({length:3},()=>({alloc:{},descs:{},estudo:0,acad:0}));
 let activePreset = 0;
-let userAlloc  = {}; // k -> itemKey
-let userDescs  = {}; // k -> string
+let userAlloc  = {};
+let userDescs  = {};
 let estudoMode = 0;
 let acadMode   = 0;
 let history    = [];
 
 function snapshot(){history.push(JSON.stringify({alloc:userAlloc,descs:userDescs}));if(history.length>60)history.shift();}
 
-function persistAll(){
-  presets[activePreset]={alloc:{...userAlloc},descs:{...userDescs},estudo:estudoMode,acad:acadMode};
-  try{localStorage.setItem(LS_KEY,JSON.stringify({presets,active:activePreset}));}catch(e){}
+// ── JSONBin config ────────────────────────────────────────────────────
+// Cole sua API Key do jsonbin.io aqui:
+const JSONBIN_API_KEY = '$2a$10$COLE_SUA_API_KEY_AQUI';
+const JSONBIN_BIN_ID_KEY = 'rotina_jsonbin_id'; // chave no localStorage para guardar o bin ID
+let syncStatus = 'idle'; // idle | saving | loading | error | ok
+
+function getBinId(){ return localStorage.getItem(JSONBIN_BIN_ID_KEY) || null; }
+function setBinId(id){ localStorage.setItem(JSONBIN_BIN_ID_KEY, id); }
+
+function setSyncStatus(s, msg=''){
+  syncStatus = s;
+  const el = document.getElementById('sync-status');
+  if(!el) return;
+  const icons = {idle:'☁️', saving:'⏳', loading:'⏳', error:'⚠️', ok:'✓'};
+  const colors = {idle:'rgba(255,255,255,.35)', saving:'rgba(255,255,255,.6)', loading:'rgba(255,255,255,.6)', error:'#FFADAD', ok:'#A8F0C6'};
+  el.textContent = (icons[s]||'') + ' ' + (msg || {idle:'Não salvo na nuvem', saving:'Salvando…', loading:'Carregando…', error:'Erro ao sincronizar', ok:'Salvo na nuvem'}[s]);
+  el.style.color = colors[s] || 'rgba(255,255,255,.35)';
 }
 
-function loadAll(){
+async function persistAll(){
+  // Sempre salva localmente primeiro
+  presets[activePreset]={alloc:{...userAlloc},descs:{...userDescs},estudo:estudoMode,acad:acadMode};
+  try{localStorage.setItem(LS_KEY,JSON.stringify({presets,active:activePreset}));}catch(e){}
+
+  // Sobe para JSONBin se a API key foi configurada
+  if(!JSONBIN_API_KEY || JSONBIN_API_KEY.includes('COLE_SUA')) {
+    setSyncStatus('idle');
+    return;
+  }
+  setSyncStatus('saving');
+  const data = {presets, active:activePreset};
+  try {
+    const binId = getBinId();
+    let res;
+    if(binId) {
+      // Atualiza bin existente
+      res = await fetch(`https://api.jsonbin.io/v3/b/${binId}`, {
+        method: 'PUT',
+        headers: {'Content-Type':'application/json','X-Master-Key':JSONBIN_API_KEY},
+        body: JSON.stringify(data)
+      });
+    } else {
+      // Cria bin novo
+      res = await fetch('https://api.jsonbin.io/v3/b', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json','X-Master-Key':JSONBIN_API_KEY,'X-Bin-Name':'rotina-gabriel'},
+        body: JSON.stringify(data)
+      });
+      if(res.ok){
+        const j = await res.json();
+        setBinId(j.metadata.id);
+      }
+    }
+    setSyncStatus(res.ok ? 'ok' : 'error');
+  } catch(e) {
+    setSyncStatus('error', 'Sem conexão');
+  }
+}
+
+async function loadAll(){
+  // Tenta carregar do JSONBin se configurado
+  if(JSONBIN_API_KEY && !JSONBIN_API_KEY.includes('COLE_SUA') && getBinId()) {
+    setSyncStatus('loading');
+    try {
+      const res = await fetch(`https://api.jsonbin.io/v3/b/${getBinId()}/latest`, {
+        headers: {'X-Master-Key':JSONBIN_API_KEY}
+      });
+      if(res.ok){
+        const j = await res.json();
+        const s = j.record;
+        if(s.presets) presets = s.presets;
+        activePreset = s.active || 0;
+        applyPreset(activePreset, false);
+        setSyncStatus('ok');
+        return;
+      }
+    } catch(e) {}
+    setSyncStatus('error', 'Usando cópia local');
+  }
+  // Fallback: localStorage
   try{
     const r=localStorage.getItem(LS_KEY);
     if(!r)return;
@@ -247,6 +325,7 @@ function loadAll(){
     activePreset=s.active||0;
     applyPreset(activePreset,false);
   }catch(e){}
+  setSyncStatus('idle');
 }
 
 function applyPreset(idx,save=true){
@@ -482,6 +561,58 @@ function renderLegend(){
   const fixedItems=Object.entries(CAT_FIXED).map(([,v])=>`<div class="leg-item"><div class="leg-dot" style="background:${v.bg}"></div>${v.label}</div>`);
   const hobbyItems=ITEMS.map(h=>`<div class="leg-item"><div class="leg-dot" style="background:${h.bg}"></div>${h.name.split('/')[0]}</div>`);
   document.getElementById('legend').innerHTML=[...fixedItems,...hobbyItems].join('');
+}
+
+// ── Export / Import ───────────────────────────────────────────────────
+function exportJSON(){
+  // Salva o preset atual antes de exportar
+  presets[activePreset]={alloc:{...userAlloc},descs:{...userDescs},estudo:estudoMode,acad:acadMode};
+  const data = {
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    active: activePreset,
+    presets: presets.map((p,i)=>({
+      name: ['Normal','Prova','Custom'][i],
+      ...p
+    }))
+  };
+  const blob = new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url;
+  a.download = `rotina_gabriel_${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('JSON exportado!');
+}
+
+function importJSON(e){
+  const file = e.target.files?.[0];
+  if(!file){return;}
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const data = JSON.parse(ev.target.result);
+      if(!data.presets||!Array.isArray(data.presets)) throw new Error('Formato inválido');
+      // Mescla: preserva estrutura esperada
+      presets = data.presets.map(p=>({
+        alloc:  p.alloc  || {},
+        descs:  p.descs  || {},
+        estudo: p.estudo || 0,
+        acad:   p.acad   || 0,
+      }));
+      // Garante 3 presets
+      while(presets.length<3) presets.push({alloc:{},descs:{},estudo:0,acad:0});
+      activePreset = data.active || 0;
+      applyPreset(activePreset, true);
+      toast('Importado com sucesso!');
+    } catch(err) {
+      toast('Erro: arquivo inválido');
+    }
+    // Reset input para permitir reimportar o mesmo arquivo
+    e.target.value='';
+  };
+  reader.readAsText(file);
 }
 
 // ── Init ──────────────────────────────────────────────────────────────
