@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "exportedAt": "2026-08-09T16:23:31.604Z",
+  "exportedAt": "2026-08-12T01:35:09.009Z",
   "active": 0,
   "presets": [
     {
@@ -34,7 +34,8 @@
         "6|15": "anim",
         "4|20": "guitar",
         "1|22": "guitar",
-        "1|21": "desenho"
+        "1|21": "desenho",
+        "2|22": "guitar"
       },
       "descs": {},
       "estudo": 0,
@@ -61,7 +62,8 @@
         "6|21": "jogos",
         "6|15": "escult",
         "6|16": "escult",
-        "6|17": "desenho"
+        "6|17": "desenho",
+        "6|18": "desenho"
       },
       "descs": {},
       "estudo": 2,
@@ -79,8 +81,6 @@
         "2|20": "desenho",
         "2|21": "desenho",
         "2|22": "guitar",
-        "3|20": "guitar",
-        "3|21": "guitar",
         "4|16": "escult",
         "4|17": "escult",
         "4|20": "desenho",
@@ -90,7 +90,11 @@
         "6|15": "anim",
         "6|17": "escult",
         "6|18": "escult",
-        "6|19": "escult"
+        "6|19": "escult",
+        "4|22": "guitar",
+        "3|23": "acad",
+        "3|22": "acad",
+        "3|21": "acad"
       },
       "descs": {},
       "estudo": 0,
