@@ -1,19 +1,14 @@
 {
   "version": 1,
-  "exportedAt": "2026-08-12T01:35:09.009Z",
-  "active": 0,
+  "exportedAt": "2026-08-13T14:22:43.087Z",
+  "active": 2,
   "presets": [
     {
       "name": "Normal",
       "alloc": {
         "0|22": "jogos",
         "0|23": "jogos",
-        "0|20": "guitar",
         "0|21": "guitar",
-        "3|20": "guitar",
-        "3|21": "guitar",
-        "3|22": "jogos",
-        "3|23": "jogos",
         "1|20": "desenho",
         "1|19": "desenho",
         "4|17": "escult",
@@ -35,7 +30,11 @@
         "4|20": "guitar",
         "1|22": "guitar",
         "1|21": "desenho",
-        "2|22": "guitar"
+        "2|22": "guitar",
+        "3|21": "acad",
+        "3|22": "acad",
+        "3|23": "jogos",
+        "0|20": "desenho"
       },
       "descs": {},
       "estudo": 0,
@@ -72,8 +71,6 @@
     {
       "name": "Custom",
       "alloc": {
-        "0|20": "guitar",
-        "0|21": "guitar",
         "1|22": "guitar",
         "1|19": "desenho",
         "1|20": "desenho",
@@ -92,9 +89,11 @@
         "6|18": "escult",
         "6|19": "escult",
         "4|22": "guitar",
-        "3|23": "acad",
         "3|22": "acad",
-        "3|21": "acad"
+        "3|21": "acad",
+        "6|21": "desenho",
+        "0|21": "guitar",
+        "0|20": "escult"
       },
       "descs": {},
       "estudo": 0,
